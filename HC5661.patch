@@ -1,0 +1,899 @@
+diff -Nur trunk_bak/feeds/luci/modules/luci-base/po/zh-cn/base.po trunk_init/feeds/luci/modules/luci-base/po/zh-cn/base.po
+--- trunk_bak/feeds/luci/modules/luci-base/po/zh-cn/base.po	2015-05-08 11:46:05.002064002 +0800
++++ trunk_init/feeds/luci/modules/luci-base/po/zh-cn/base.po	2015-05-08 13:52:10.422243855 +0800
+@@ -1437,6 +1437,9 @@
+ msgid "Logout"
+ msgstr "退出"
+ 
++msgid "Free Memory"
++msgstr "释放内存"
++
+ msgid "Lowest leased address as offset from the network address."
+ msgstr "网络地址的起始分配基址。"
+ 
+diff -Nur trunk_bak/feeds/luci/modules/luci-base/root/etc/config/luci trunk_init/feeds/luci/modules/luci-base/root/etc/config/luci
+--- trunk_bak/feeds/luci/modules/luci-base/root/etc/config/luci	2015-05-08 11:46:05.018064003 +0800
++++ trunk_init/feeds/luci/modules/luci-base/root/etc/config/luci	2015-05-08 13:52:10.438243855 +0800
+@@ -1,6 +1,6 @@
+ config core main
+-	option lang auto
+-	option mediaurlbase /luci-static/openwrt.org
++	option lang zh_cn
++	option mediaurlbase "/luci-static/bootstrap"
+ 	option resourcebase /luci-static/resources
+ 	
+ config extern flash_keep
+@@ -13,6 +13,8 @@
+ 	option uploads	"/lib/uci/upload/"
+ 	
+ config internal languages
++	option zh_cn "chinese"
++	option en "English"
+ 	
+ config internal sauth
+ 	option sessionpath "/tmp/luci-sessions"
+@@ -22,3 +24,4 @@
+ 	option enable 1
+ 		
+ config internal themes
++	option Bootstrap "/luci-static/bootstrap"
+diff -Nur trunk_bak/feeds/luci/modules/luci-mod-admin-full/luasrc/controller/admin/index.lua trunk_init/feeds/luci/modules/luci-mod-admin-full/luasrc/controller/admin/index.lua
+--- trunk_bak/feeds/luci/modules/luci-mod-admin-full/luasrc/controller/admin/index.lua	2015-05-08 11:46:05.114064005 +0800
++++ trunk_init/feeds/luci/modules/luci-mod-admin-full/luasrc/controller/admin/index.lua	2015-05-08 13:52:10.438243855 +0800
+@@ -22,6 +22,7 @@
+ 	-- Empty services menu to be populated by addons
+ 	entry({"admin", "services"}, firstchild(), _("Services"), 40).index = true
+ 
++	entry({"admin", "Free_Memory"}, call("Free_Memory"), _("Free Memory"), 89)
+ 	entry({"admin", "logout"}, call("action_logout"), _("Logout"), 90)
+ end
+ 
+@@ -42,3 +43,8 @@
+ 
+ 	luci.http.redirect(luci.dispatcher.build_url())
+ end
++
++function Free_Memory()
++	luci.util.exec("echo 3 > /proc/sys/vm/drop_caches")
++	luci.http.redirect(luci.dispatcher.build_url("admin", "status", "overview"))
++end
+diff -Nur trunk_bak/feeds.conf.default trunk_init/feeds.conf.default
+--- trunk_bak/feeds.conf.default	2015-05-08 11:47:02.000000000 +0800
++++ trunk_init/feeds.conf.default	2015-05-08 13:52:10.502243857 +0800
+@@ -1,5 +1,5 @@
+ src-git packages https://github.com/openwrt/packages.git
+-src-git luci https://github.com/openwrt/luci.git
++src-git luci https://github.com/981213/luci-1.git
+ src-git routing https://github.com/openwrt-routing/packages.git
+ src-git telephony https://github.com/openwrt/telephony.git
+ src-git management https://github.com/openwrt-management/packages.git
+diff -Nur trunk_bak/package/base-files/files/etc/config/samba trunk_init/package/base-files/files/etc/config/samba
+--- trunk_bak/package/base-files/files/etc/config/samba	1970-01-01 08:00:00.000000000 +0800
++++ trunk_init/package/base-files/files/etc/config/samba	2015-05-08 13:52:10.502243857 +0800
+@@ -0,0 +1,9 @@
++config samba
++	option charset 'gb2312'
++
++config sambashare
++	option read_only 'no'
++	option guest_ok 'yes'
++	option create_mask '0777'
++	option dir_mask '0777'
++	option display charset
+diff -Nur trunk_bak/package/base-files/files/etc/config/system trunk_init/package/base-files/files/etc/config/system
+--- trunk_bak/package/base-files/files/etc/config/system	2015-05-08 11:45:54.650063756 +0800
++++ trunk_init/package/base-files/files/etc/config/system	2015-05-08 13:52:10.518243857 +0800
+@@ -1,11 +1,34 @@
+ config system
+-	option hostname	OpenWrt
+-	option timezone	UTC
++	option hostname 'HiWiFi'
++	option timezone 'CST-8'
++	option zonename 'Asia/Shanghai'
+ 
+-config timeserver ntp
+-	list server	0.openwrt.pool.ntp.org
+-	list server	1.openwrt.pool.ntp.org
+-	list server	2.openwrt.pool.ntp.org
+-	list server	3.openwrt.pool.ntp.org
+-	option enabled 1
+-	option enable_server 0
++config timeserver 'ntp'
++	list server '0.openwrt.pool.ntp.org'
++	list server '1.openwrt.pool.ntp.org'
++	list server '2.openwrt.pool.ntp.org'
++	list server '3.openwrt.pool.ntp.org'
++	option enabled '1'
++	option enable_server '0'
++
++config led
++	option name 'power'
++	option sysfs 'HC5661:blue:power'
++	option default '1'
++	option trigger 'none'
++
++config led
++	option default '0'
++	option name 'internet'
++	option sysfs 'HC5661:blue:internet'
++	option trigger 'netdev'
++	option dev 'eth0'
++	option mode 'link tx rx'
++
++config led
++	option default '0'
++	option name 'wifi'
++	option sysfs 'HC5661:blue:wifi'
++	option trigger 'netdev'
++	option dev 'wlan0'
++	option mode 'link tx rx'
+diff -Nur trunk_bak/package/base-files/files/etc/config/uhttpd trunk_init/package/base-files/files/etc/config/uhttpd
+--- trunk_bak/package/base-files/files/etc/config/uhttpd	1970-01-01 08:00:00.000000000 +0800
++++ trunk_init/package/base-files/files/etc/config/uhttpd	2015-05-08 13:52:10.518243857 +0800
+@@ -0,0 +1,27 @@
++
++config uhttpd 'main'
++	list listen_http '0.0.0.0:88'
++	list listen_http '[::]:88'
++	list listen_https '0.0.0.0:443'
++	list listen_https '[::]:443'
++	option home '/www'
++	option rfc1918_filter '1'
++	option max_requests '3'
++	option max_connections '100'
++	option cert '/etc/uhttpd.crt'
++	option key '/etc/uhttpd.key'
++	option cgi_prefix '/cgi-bin'
++	option script_timeout '60'
++	option network_timeout '30'
++	option http_keepalive '20'
++	option tcp_keepalive '1'
++	option ubus_prefix '/ubus'
++
++config cert 'px5g'
++	option days '730'
++	option bits '1024'
++	option country 'DE'
++	option state 'Berlin'
++	option location 'Berlin'
++	option commonname 'OpenWrt'
++
+diff -Nur trunk_bak/package/base-files/files/etc/hotplug.d/block/30-block_mount trunk_init/package/base-files/files/etc/hotplug.d/block/30-block_mount
+--- trunk_bak/package/base-files/files/etc/hotplug.d/block/30-block_mount	1970-01-01 08:00:00.000000000 +0800
++++ trunk_init/package/base-files/files/etc/hotplug.d/block/30-block_mount	2014-12-01 01:18:33.000000000 +0800
+@@ -0,0 +1,360 @@
++#!/bin/sh
++
++#---------------------------------------------------------------------
++# Filename:    30-block_mount
++# Revision:    0.5.6
++# Data:        Dec. 1, 2014
++# Email:       kevinyu@vip.qq.com
++# Contacts:    QQ/TM 389191 or mail address above
++# Licensing:   General Public License v2
++# Description: Created for automatic mount block devices on OpenWRT
++# Usage:       Put this script into directory /etc/hotplug.d/block
++#---------------------------------------------------------------------
++
++## Global settings of auto-mount script ##
++
++# Turn on|off auto-mount function for disk volumes
++VOL_ENABLED=1  # <0|1  0-Disable, 1-Enable>
++
++# Turn on|off auto-mount function for sawp partition  
++SWAP_ENABLED=1  # <0|1  0-Disable, 1-Enable>
++
++# Set which method you want to name the mounted volumes
++USE_VLABEL=1  # <0|1  0-Use device name, 1-Use volume label>  Eg. /mnt/sda1 | /mnt/DataDisk
++#
++# Note that if you choose name mount point by volume label but the volume's label is empty,
++# the volume will be named to 'volume_$PARTUUID', such as the /mnt/volume_31173116-01
++# Also, if exist more than one device which have the same volume label, it will be renamed 
++# as the original name + sequence number, such as the /mnt/DataDisk_n (n=1,2,3..9)
++
++# Show filesystem type as the prefix of mount point, requires set USE_VLABEL=1
++FSTYPE_IN_VLABEL=1  # <0|1  0-Disable, 1-Enable>  Eg. /mnt/[ntfs]-DataDisk
++
++# Set access the mounted device with read-write or read-only permission
++FS_READONLY=0  # <0|1  0-Read Write, 1-Read Only>
++
++# Exclusion list of auto-mount function
++# Allows mixing the device name, volume label and UUID, each item must be separated by space(s)
++# Eg. EXCLUDE_LIST="sda1 DataDisk f32b2ea6-4d42-43a5-bcec-7d818a163d07" 
++EXCLUDE_LIST=""  # Default: empty string
++
++# Specify a directory for mounts
++MOUNTS_PATH="/mnt"  # Default: /mnt , don't need include the trailing slash (/)
++
++# Turn on|off auto purge function for unused mount point in MOUNTS_PATH
++PURGE_MNTS=1  # <0|1  0-Disable, 1-Enable>
++
++# Define the add-ons scripts directory for automatic execute
++ADDSH_PATH="/etc/hotplug.d/user"  # Script naming rule: [0-9][0-9]-xxxxx, Eg. 20-backup-sdcard
++
++# Define the verbose level of console output (CLI) and logging
++VERBOSE=3 # <0|1|2|3  See details below>
++#       0 - Show errors only
++#       1 - Show errors and warnings
++#       2 - Show errors, warnings, and notices
++#       3 - Show errors, warnings, notices, and debug info
++
++## End of global settings ##
++
++# Print message to console and log
++# Usage: print2log <Log Tag> <Message Type: Error|Warning|Notice|Debug> <Message Text>
++print2log()
++{
++local LOG_TAG MSG_TYPE MSG_TEXT FD
++[ $# -ne 3 ] && { echo "**Function 'print2log' must be specified 3 parameters! "; return 1; }
++LOG_TAG=$1
++MSG_TYPE=$2
++MSG_TEXT=$3
++case `echo $MSG_TYPE | tr [A-Z] [a-z]` in
++    error)   [ $VERBOSE -ge 0 ] && FD=2 || return 1
++        ;;
++    warning) [ $VERBOSE -ge 1 ] && FD=1 || return 1
++        ;;
++    notice)  [ $VERBOSE -ge 2 ] && FD=1 || return 1
++        ;;
++    debug)   [ $VERBOSE -ge 3 ] && FD=1 || return 1
++        ;;
++    *)
++        MSG_TEXT="Wrong message type '$MSG_TYPE' specified by message '$MSG_TEXT'"
++        MSG_TYPE="Error"
++        FD=2
++        ;;
++esac
++[ -n "$DISPLAY" ] && echo "[$MSG_TYPE] $MSG_TEXT" > /proc/self/fd/$FD
++logger -t $LOG_TAG "[$MSG_TYPE] $MSG_TEXT"
++}
++
++# Mount all block device
++mountall()
++{
++local i DEVS
++DEVS=`ls /dev/sd[a-z][1-9]* 2>&-`
++[ -z "$DEVS" ] && { print2log Auto-Mount Notice "No block device found on this system"; exit 0; }
++print2log Auto-Mount Notice "Mounting all block device..."
++for i in $DEVS ; do
++    if ! `grep -qs "$i" /proc/mounts` ; then
++        sh $0 add ${i##*/}
++        sleep 1
++    fi
++done
++}
++
++# Unmount all block device
++unmountall()
++{
++local i MOUNTS
++MOUNTS=`grep -os '^/dev/sd[a-z][1-9][0-9]*' /proc/mounts`
++[ -z "$MOUNTS" ] && { print2log Auto-Mount Notice "No block device mounted on this system"; exit 0; }
++print2log Auto-Mount Notice "Unmounting all block device..."
++for i in $MOUNTS ; do
++    umount -f $i
++    [ $? -eq 0 ] &&	print2log Auto-Mount Notice "Device $i unmounted" \
++                 || print2log Auto-Mount Notice "Unmount device $i failed"
++done
++purge_mntdir
++}
++
++# Purge directory $MOUNTS_PATH
++purge_mntdir()
++{
++local i
++[ -d $MOUNTS_PATH ] || return 1
++[ $PURGE_MNTS -eq 0 ] && return 1
++for i in $MOUNTS_PATH/* ; do
++    if [ -d $i ] ; then
++        if [ -z "`ls -A $i 2>&-`" ] ; then
++            if ! `grep -Fqs "$i" /proc/mounts` ; then
++                rm -rf $i 2>/dev/null
++                [ $? -eq 0 ] && print2log Auto-Mount Notice "Unused mount point $i was removed" \
++                             || print2log Auto-Mount Error "Remove unused mount point $i failed"
++            fi
++        fi
++    fi
++done
++}
++
++MOUNTS_PATH=${MOUNTS_PATH%/}
++[ -z "$ACTION" ] && ACTION=${1##*-}
++[ -n "$DEVICENAME" ] && DEV=$DEVICENAME || DEV=$2
++# Exclude Flash/NAND block devices
++`echo "$DEV" | grep -Eqs '^(mtd|ubi)block[0-9].*'` &&  exit 0
++
++# Detect blkid exists
++BLKID=`which blkid`
++if [ $? -ne 0 ] ; then
++    print2log Auto-Mount Error "Unable to mount block devices automatically because 'blkid' does not exist"
++    exit 1
++fi
++
++[ "$ACTION" = "mountall" -o "$ACTION" = "unmountall" ] && DEV="*"
++print2log Auto-Mount Debug "OTPs: action='$ACTION' devicename='$DEV'"
++case "$ACTION" in
++    add)
++        [ -z "$DEV" ] && { print2log Auto-Mount Error "Missing required arguments: \$devicename"; exit 1; }
++        BLKINFO=`$BLKID -d /dev/$DEV 2>/dev/null`
++        if [ -n "$EXCLUDE_LIST" ] ; then
++            ## Old method, inefficient and consumes more resources
++            # UUID=`$BLKID -s UUID /dev/$DEV | awk -F '=' '{print $NF}' | tr -d '"| '`
++            # VLABEL=`$BLKID -d -s LABEL /dev/$DEV | awk -F '=' '{print $NF}' | tr -d '"| '`
++            UUID=`echo "$BLKINFO" | grep -Eos '\<UUID=[^[:space:]]+' | awk -F '=' '{print $NF}' | tr -d '"| '`
++            VLABEL=`echo "$BLKINFO" | grep -Eos '\<LABEL=[^[:space:]]+' | awk -F '=' '{print $NF}' | tr -d '"| '`
++            for i in $EXCLUDE_LIST ; do
++                ignore=0
++                if `echo "$i" | grep -qs '^sd[a-z][1-9][0-9]*$'` ; then  # is device name
++                    [ "$i" = "$DEV" ] && ignore=1
++                elif `echo "$i" | grep -Eiqs '^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$'` ; then  # is UUID
++                    [ "$i" = "$UUID" ] && ignore=1
++                else  # as volume label
++                    [ "$i" = "$VLABEL" ] && ignore=1
++                fi
++                [ $ignore -eq 1 ] && { print2log Auto-Mount Notice "Device $DEV was ignored because it in exclusion list"; exit 0; }
++            done
++        fi
++        if `echo "$DEV" | grep -qs '^sd[a-z][1-9][0-9]*$'` ; then
++            [ -z "$VLABEL" ] && VLABEL=`echo "$BLKINFO" | grep -Eos '\<LABEL=[^[:space:]]+' | awk -F '=' '{print $NF}' | tr -d '"| '`
++            [ -z "$VLABEL" ] && VLABEL="unknown"
++            FSTYPE=`echo "$BLKINFO" | grep -Eos '\<TYPE=[^[:space:]]+' | awk -F '=' '{print $NF}' | tr -d '"| '`
++            [ -z "$FSTYPE" ] && FSTYPE="unknown"
++            if [ "$FSTYPE" = "unknown" ] ; then
++                PTTYPE=`echo "$BLKINFO" | grep -Eos '\<PTTYPE=[^[:space:]]+' | awk -F '=' '{print $NF}' | tr -d '"| '`
++                [ "$PTTYPE" = "dos" ] && { \
++                print2log Auto-Mount Debug "Device $DEV was ignored because it is an extended partition"; exit 0; }
++            fi
++            print2log Auto-Mount Debug "OTPs: devicename='$DEV' volume_label='$VLABEL' fstype='$FSTYPE'"
++            MCMD=""  # set default value
++            [ $FS_READONLY -eq 1 ] && acs="ro" || acs="rw"
++            case "$FSTYPE" in
++                ext[234])
++                    if `grep -vs '^nodev' /proc/filesystems | grep -qs "$FSTYPE"` ; then
++                        MCMD="mount -t $FSTYPE -o ${acs},noatime"
++                    fi
++                    ;;
++                xfs|reiserfs)
++                    if `grep -vs '^nodev' /proc/filesystems | grep -qs "$FSTYPE"` ; then
++                        MCMD="mount -t $FSTYPE -o ${acs},noatime"
++                    fi
++                    ;;
++                iso9660|udf)
++                    if `grep -vs '^nodev' /proc/filesystems | grep -qs "$FSTYPE"` ; then
++                        MCMD="mount -t $FSTYPE -o ro"
++                    fi
++                    ;;
++                msdos)
++                    if `grep -vs '^nodev' /proc/filesystems | grep -qs "$FSTYPE"` ; then
++                        MCMD="mount -t $FSTYPE -o ${acs},codepage=936,iocharset=utf8,umask=000"
++                    fi
++                    ;;
++                vfat)
++                    if `grep -vs '^nodev' /proc/filesystems | grep -qs "$FSTYPE"` ; then
++                        MCMD="mount -t $FSTYPE -o ${acs},codepage=936,utf8=1,umask=000"
++                    fi
++                    ;;
++                exfat)
++                    if `grep -Eqs '^[[:space:]]+fuseblk$' /proc/filesystems` && `which mount.exfat >/dev/null` ; then
++                        MCMD="mount.exfat -o ${acs},iocharset=cp936,umask=000"
++                    fi
++                    ;;
++                ntfs)
++                    if `grep -Eqs '^[[:space:]]+fuseblk$' /proc/filesystems` && `which mount.ntfs-3g >/dev/null` ; then
++                        MCMD="mount -t ntfs-3g -o ${acs},noatime,big_writes,async,nls=utf8,umask=000"
++                    fi
++                    ;;
++                swap)
++                    [ $SWAP_ENABLED -ne 1 ] && exit 0
++                    if [ `grep -vs '^Filename' /proc/swaps | wc -l` -eq 0 ] ; then
++                        MCMD="swapon /dev/$DEV"
++                    fi
++                    ;;
++                *)
++                    MCMD=""
++                    ;;
++            esac
++            [ $VOL_ENABLED -ne 1 ] && exit 0
++            if [ "$FSTYPE" = "swap" ] ; then
++                MOPT=""
++            elif [ "$FSTYPE" = "iso9660" -o $FSTYPE = "udf" ] ; then
++                CDROM="cdrom"
++                if `grep -qs "$MOUNTS_PATH/$CDROM " /proc/mounts` ; then
++                    SUFFIX=1
++                    while `grep -qs "$MOUNTS_PATH/$CDROM " /proc/mounts` ; do
++                        [ $SUFFIX -lt 10 ] && CDROM="${CDROM%_*}_$SUFFIX" || { CDROM="${CDROM%_*}_99"; break; }
++                        let SUFFIX++
++                    done
++                fi
++                MPOINT=$CDROM
++            else
++                if [ $USE_VLABEL -eq 1 ] ; then
++                    if [ "$VLABEL" = "unknown" ] ; then
++                        PARTUUID=`$BLKID -s PARTUUID /dev/$DEV | awk -F '=' '{print $NF}' | tr -d '"| '`
++                        [ -z "$PARTUUID" ] && PARTUUID=`cat /proc/sys/kernel/random/uuid | cut -f1 -d'-'`
++                        VLABEL="volume_${PARTUUID}"
++                    elif `grep -qis "$MOUNTS_PATH/$VLABEL " /proc/mounts` ; then
++                        SUFFIX=1
++                        while `grep -qis "$MOUNTS_PATH/$VLABEL " /proc/mounts` ; do
++                            if [ $SUFFIX -lt 10 ] ; then
++                                VLABEL="$(echo "$VLABEL" | sed 's/_[0-9]\+$//')_$SUFFIX"
++                                let SUFFIX++
++                            else
++                                VLABEL="$(echo "$VLABEL" | sed 's/_[0-9]\+$//')_99"
++                                break
++                            fi
++                        done
++                    fi
++                    [ $FSTYPE_IN_VLABEL -eq 1 ] && MPOINT="[${FSTYPE}]-${VLABEL}" || MPOINT=$VLABEL
++                else
++                    MPOINT=$DEV
++                fi
++                MOPT="/dev/$DEV $MOUNTS_PATH/$MPOINT"
++            fi
++            if [ -n "$MCMD" ] ; then
++                if ! `grep -qs '/dev/$DEV' /proc/mounts` ; then
++                    [ "$FSTYPE" = "swap" ] || { [ -d $MOUNTS_PATH/$MPOINT ] || mkdir -p $MOUNTS_PATH/$MPOINT; }
++                    print2log Auto-Mount Debug "OTPs: MountCMD='$MCMD $MOPT'"
++                    $MCMD $MOPT
++                    RETVAL=$?
++                    if [ "$FSTYPE" = "swap" ] ; then
++                        if [ $RETVAL -eq 0 ] ; then
++                            exitcode=0
++                            print2log Auto-Mount Notice "Swap device /dev/$DEV turned on" 
++                        fi
++                    else
++                        if [ $RETVAL -eq 0 ] ; then
++                            exitcode=0
++                            print2log Auto-Mount Notice "Block device /dev/$DEV mounted on $MOUNTS_PATH/$MPOINT" 
++                        else
++                            print2log Auto-Mount Warning "Re-try mount the block device /dev/$DEV after 2 seconds..."
++                            sleep 2
++                            $MCMD $MOPT
++                            if [ $? -eq 0 ] ; then
++                                exitcode=0
++                                print2log Auto-Mount Notice "Block device /dev/$DEV mounted on $MOUNTS_PATH/$MPOINT" 
++                            else
++                                exitcode=1
++                                purge_mntdir
++                                print2log Auto-Mount Error "Mount block device /dev/$DEV encounters an error"
++                            fi
++                        fi
++                    fi
++                fi
++            else
++                if [ "$FSTYPE" = "swap" ] ; then
++                    print2log Auto-Mount Notice "Swap device /dev/$DEV was ignored"
++                    exit 0
++                else
++                    exitcode=2
++                    print2log Auto-Mount Error "Unsupported filesystem '$FSTYPE' on /dev/$DEV"
++                fi
++            fi
++            unset MCMD
++        else
++            exit 0
++        fi
++        purge_mntdir
++        ;;
++    remove)
++        [ -z "$DEV" ] && { print2log Auto-Mount Error "Missing required arguments: \$devicename"; exit 1; }
++        if `echo "$DEV" | grep -qs '^sd[a-z][1-9][0-9]*$'` ; then
++            if `grep -qs '/dev/$DEV' /proc/mounts` ; then
++                MPATH=`awk -F ' ' '/\/dev\/'"$DEV"'/ {print $2}' /proc/mounts 2>/dev/null`
++                umount /dev/$DEV
++                [ $? -eq 0 ] &&	print2log Auto-Mount Notice "Block device $DEV unmounted"
++                [ -d "$MPATH" ] && rm -rf $MPATH 2>/dev/null
++            fi
++            if `grep -qs '/dev/$DEV' /proc/swaps` ; then
++                swapoff $DEV
++                [ $? -eq 0 ] &&	print2log Auto-Mount Notice "Swap device $DEV turned off" 				
++            fi			
++        fi
++        purge_mntdir
++        ;;
++    mountall)
++        CLI="yes"
++        mountall
++        ;;
++    unmountall)
++        CLI="yes"
++        sync
++        unmountall
++        ;;
++    purgemnt)
++        CLI="yes"
++        purge_mntdir
++        ;;
++    *)
++        print2log Auto-Mount Error "** Invalid action arguments: $ACTION"
++        ;;
++esac
++
++## Execute the add-ons script
++if [ "$CLI" != "yes" ] ; then
++    if [ -n "`ls -A $ADDSH_PATH 2>&-`" ]; then
++        i=0
++        for addsh in ${ADDSH_PATH}/[0-9][0-9]-* ; do
++            [ $i -eq 0 ] && print2log Auto-Mount Notice "-- Execute additional scripts..."
++            print2log Auto-Mount Debug "-- Exec script: $addsh $ACTION $DEV $exitcode"
++            sh $addsh $ACTION $DEV $exitcode
++            let i++
++        done
++    fi
++fi
++# Script EOF
++
+diff -Nur trunk_bak/package/base-files/files/etc/samba/smb.conf.template trunk_init/package/base-files/files/etc/samba/smb.conf.template
+--- trunk_bak/package/base-files/files/etc/samba/smb.conf.template	1970-01-01 08:00:00.000000000 +0800
++++ trunk_init/package/base-files/files/etc/samba/smb.conf.template	2015-05-08 13:52:10.522243857 +0800
+@@ -0,0 +1,34 @@
++[global]
++	netbios name = |NAME| 
++	display charset = |CHARSET|
++	interfaces = |INTERFACES|
++	server string = |DESCRIPTION|
++	unix charset = |CHARSET|
++	workgroup = |WORKGROUP|
++	browseable = yes
++	deadtime = 30
++	domain master = yes
++	encrypt passwords = true
++	enable core files = no
++	guest account = nobody
++	guest ok = yes
++	#invalid users = root
++	local master = yes
++	load printers = no
++	map to guest = Bad User
++	max protocol = SMB2
++	min receivefile size = 16384
++	null passwords = yes
++	obey pam restrictions = yes
++	os level = 20
++	passdb backend = smbpasswd
++	preferred master = yes
++	printable = no
++	security = share
++	smb encrypt = disabled
++	#smb passwd file = /etc/samba/smbpasswd
++	socket options = TCP_NODELAY IPTOS_LOWDELAY
++	syslog = 2
++	use sendfile = yes
++	writeable = yes
++	
+diff -Nur trunk_bak/package/base-files/files/etc/shadow trunk_init/package/base-files/files/etc/shadow
+--- trunk_bak/package/base-files/files/etc/shadow	2015-05-08 11:45:54.626063756 +0800
++++ trunk_init/package/base-files/files/etc/shadow	2015-05-08 13:52:10.542243858 +0800
+@@ -1,4 +1,4 @@
+-root::0:0:99999:7:::
++root:$1$wEehtjxj$YBu4quNfVUjzfv8p/PBo5.:0:0:99999:7:::
+ daemon:*:0:0:99999:7:::
+ ftp:*:0:0:99999:7:::
+ network:*:0:0:99999:7:::
+diff -Nur trunk_bak/package/base-files/files/etc/sysctl.conf trunk_init/package/base-files/files/etc/sysctl.conf
+--- trunk_bak/package/base-files/files/etc/sysctl.conf	2015-05-08 11:45:54.622063756 +0800
++++ trunk_init/package/base-files/files/etc/sysctl.conf	2015-05-08 13:52:10.550243858 +0800
+@@ -18,7 +18,7 @@
+ 
+ net.netfilter.nf_conntrack_acct=1
+ net.netfilter.nf_conntrack_checksum=0
+-net.netfilter.nf_conntrack_max=16384
++net.netfilter.nf_conntrack_max=65535
+ net.netfilter.nf_conntrack_tcp_timeout_established=7440
+ net.netfilter.nf_conntrack_udp_timeout=60
+ net.netfilter.nf_conntrack_udp_timeout_stream=180
+diff -Nur trunk_bak/package/kernel/mac80211/files/lib/wifi/mac80211.sh trunk_init/package/kernel/mac80211/files/lib/wifi/mac80211.sh
+--- trunk_bak/package/kernel/mac80211/files/lib/wifi/mac80211.sh	2015-05-08 11:45:51.074063671 +0800
++++ trunk_init/package/kernel/mac80211/files/lib/wifi/mac80211.sh	2015-05-08 13:54:44.890247527 +0800
+@@ -115,13 +115,12 @@
+ $dev_id
+ $ht_capab
+ 	# REMOVE THIS LINE TO ENABLE WIFI:
+-	option disabled 1
+ 
+ config wifi-iface
+ 	option device   radio$devidx
+ 	option network  lan
+ 	option mode     ap
+-	option ssid     OpenWrt
++	option ssid     HiWiFi_$(cat /sys/class/ieee80211/${dev}/macaddress|awk -F ":" '{print $4""$5""$6 }'| tr a-z A-Z)
+ 	option encryption none
+ 
+ EOF
+diff -Nur trunk_bak/target/linux/ramips/base-files/etc/board.d/01_leds trunk_init/target/linux/ramips/base-files/etc/board.d/01_leds
+--- trunk_bak/target/linux/ramips/base-files/etc/board.d/01_leds	2015-05-08 11:45:48.366063607 +0800
++++ trunk_init/target/linux/ramips/base-files/etc/board.d/01_leds	2015-05-08 13:54:44.958247529 +0800
+@@ -231,6 +231,11 @@
+ 	xiaomi-miwifi-mini)
+ 		ucidef_set_led_default "power" "power" "xiaomi:red:status" "1"
+ 		;;
++	HC5661)
++		ucidef_set_led_default "power" "power" "HC5661:blue:power" "1"
++		ucidef_set_led_netdev "internet" "internet" "HC5661:blue:internet" "eth0.2"
++		set_wifi_led "HC5661:blue:wifi"
++		;;
+ 	y1 |\
+ 	y1s)
+ 		ucidef_set_led_default "power" "power" "lenovo:blue:power" "1"
+diff -Nur trunk_bak/target/linux/ramips/base-files/etc/board.d/02_network trunk_init/target/linux/ramips/base-files/etc/board.d/02_network
+--- trunk_bak/target/linux/ramips/base-files/etc/board.d/02_network	2015-05-08 11:45:48.366063607 +0800
++++ trunk_init/target/linux/ramips/base-files/etc/board.d/02_network	2015-05-08 13:54:44.958247529 +0800
+@@ -223,6 +223,7 @@
+ 		ucidef_add_switch_vlan "switch0" "2" "4 6t"
+ 		;;
+ 
++	HC5661 |\
+ 	y1s)
+ 		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
+ 		ucidef_add_switch "switch0" "1" "1"
+@@ -310,6 +311,7 @@
+ 	dir-320-b1 | \
+ 	psr-680w |\
+ 	sl-r7205 |\
++	HC5661 |\
+ 	y1 |\
+ 	y1s)
+ 		lan_mac=$(cat /sys/class/net/eth0/address)
+diff -Nur trunk_bak/target/linux/ramips/base-files/etc/diag.sh trunk_init/target/linux/ramips/base-files/etc/diag.sh
+--- trunk_bak/target/linux/ramips/base-files/etc/diag.sh	2015-05-08 11:45:48.362063607 +0800
++++ trunk_init/target/linux/ramips/base-files/etc/diag.sh	2015-05-08 13:54:44.962247529 +0800
+@@ -220,6 +220,9 @@
+ 	na930)
+ 		status_led="na930:blue:power"
+ 		;;
++	HC5661)
++		status_led="HC5661:blue:power"
++		;;
+ 	y1 | \
+ 	y1s)
+ 		status_led="lenovo:blue:power"
+diff -Nur trunk_bak/target/linux/ramips/base-files/lib/ramips.sh trunk_init/target/linux/ramips/base-files/lib/ramips.sh
+--- trunk_bak/target/linux/ramips/base-files/lib/ramips.sh	2015-05-08 11:45:48.354063606 +0800
++++ trunk_init/target/linux/ramips/base-files/lib/ramips.sh	2015-05-08 13:54:44.962247529 +0800
+@@ -385,6 +385,9 @@
+ 	*"ZTE Q7")
+ 		name="zte-q7"
+ 		;;
++	*"HC5661 MIPS Ralink MT7620A")
++		name="HC5661"
++		;;
+ 	*"Lenovo Y1")
+ 		name="y1"
+ 		;;
+diff -Nur trunk_bak/target/linux/ramips/base-files/lib/upgrade/platform.sh trunk_init/target/linux/ramips/base-files/lib/upgrade/platform.sh
+--- trunk_bak/target/linux/ramips/base-files/lib/upgrade/platform.sh	2015-05-08 11:45:48.362063607 +0800
++++ trunk_init/target/linux/ramips/base-files/lib/upgrade/platform.sh	2015-05-08 13:54:44.962247529 +0800
+@@ -113,6 +113,7 @@
+ 	x5 |\
+ 	x8 |\
+ 	xiaomi-miwifi-mini |\
++	HC5661 |\
+ 	y1 |\
+ 	y1s |\
+ 	zte-q7 |\
+diff -Nur trunk_bak/target/linux/ramips/dts/HC5661.dts trunk_init/target/linux/ramips/dts/HC5661.dts
+--- trunk_bak/target/linux/ramips/dts/HC5661.dts	1970-01-01 08:00:00.000000000 +0800
++++ trunk_init/target/linux/ramips/dts/HC5661.dts	2015-05-08 13:54:44.966247529 +0800
+@@ -0,0 +1,146 @@
++/dts-v1/;
++
++/include/ "mt7620a.dtsi"
++
++/ {
++	compatible = "HiWiFi-HC5661", "ralink,mt7620a-soc";
++	model = "HiWiFi HC5661";
++
++	chosen {
++		bootargs = "console=ttyS0,115200";
++	};
++	
++	palmbus@10000000 {
++		sysc@0 {
++			ralink,gpiomux = "i2c", "jtag";
++			ralink,uartmux = "gpio";
++			ralink,wdtmux = <1>;
++		};
++
++		gpio0: gpio@600 {
++			status = "okay";
++		};
++
++		gpio2: gpio@660 {
++			status = "okay";
++		};
++
++		gpio3: gpio@688 {
++			status = "okay";
++		};
++
++		spi@b00 {
++			status = "okay";
++
++			m25p80@0 {
++				#address-cells = <1>;
++				#size-cells = <1>;
++				compatible = "w25q128";
++				reg = <0 0>;
++				linux,modalias = "m25p80", "w25q128";
++				spi-max-frequency = <10000000>;
++
++				partition@0 {
++					label = "u-boot";
++					reg = <0x0 0x30000>;
++					read-only;
++				};
++
++				partition@30000 {
++					label = "u-boot-env";
++					reg = <0x30000 0x10000>;
++					read-only;
++				};
++
++				factory: partition@40000 {
++					label = "factory";
++					reg = <0x40000 0x10000>;
++					read-only;
++				};
++
++				partition@50000 {
++					label = "firmware";
++					reg = <0x50000 0xfb0000>;
++				};
++
++				partition@60000 {
++					label = "hwf_config";
++					reg = <0x60000 0x10000>;
++				};
++
++				partition@70000 {
++					label = "bdinfo";
++					reg = <0x70000 0x10000>;
++				};
++			};
++		};
++	};
++	
++	pinctrl {
++		state_default: pinctrl0 {
++			gpio {
++				ralink,group = "uartf", "wled", "nd_sd";
++				ralink,function = "gpio";
++			};
++			pa {
++				ralink,group = "pa";
++				ralink,function = "pa";
++			};
++		};
++	};
++
++	ethernet@10100000 {
++		pinctrl-names = "default";
++		pinctrl-0 = <&ephy_pins>;
++		mtd-mac-address = <&factory 0x4>;
++		ralink,port-map = "wllll";
++	};
++
++	wmac@10180000 {
++		ralink,mtd-eeprom = <&factory 0>;
++	};
++
++	gsw@10110000 {
++		ralink,port4 = "gmac";
++	};
++
++	ehci@101c0000 {
++		status = "okay";
++	};
++
++	sdhci@10130000 {
++		status = "okay";
++	};
++
++	pcie@10140000 {
++		status = "okay";
++	};
++
++	gpio-keys-polled {
++		compatible = "gpio-keys-polled";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		poll-interval = <20>;
++		reset {
++			label = "reset";
++			gpios = <&gpio0 12 1>;
++			linux,code = <0x198>;
++		};
++	};
++
++	gpio-leds {
++		compatible = "gpio-leds";
++		power1 {
++			label = "HC5661:blue:power";
++			gpios = <&gpio0 9 1>;
++		};
++		wlan1 {
++			label = "HC5661:blue:wifi";
++			gpios = <&gpio3 0 1>;
++		};
++		internet {
++			label = "HC5661:blue:internet";
++			gpios = <&gpio0 11 1>;
++		};
++	};
++};
+diff -Nur trunk_bak/target/linux/ramips/image/Makefile trunk_init/target/linux/ramips/image/Makefile
+--- trunk_bak/target/linux/ramips/image/Makefile	2015-05-08 11:45:48.702063615 +0800
++++ trunk_init/target/linux/ramips/image/Makefile	2015-05-08 13:54:44.974247529 +0800
+@@ -834,70 +834,11 @@
+ # MT7620A Profiles
+ #
+ 
+-Image/Build/Profile/E1700=$(call BuildFirmware/UMedia/$(1),$(1),e1700,E1700,0x013326)
+-Image/Build/Profile/MT7620a=$(call BuildFirmware/Default8M/$(1),$(1),mt7620a,MT7620a)
+-Image/Build/Profile/MT7620a_MT7610e=$(call BuildFirmware/Default8M/$(1),$(1),mt7620a_mt7610e,MT7620a_MT7610e)
+-Image/Build/Profile/MT7620a_MT7530=$(call BuildFirmware/Default8M/$(1),$(1),mt7620a_mt7530,MT7620a_MT7530)
+-Image/Build/Profile/MT7620a_V22SG=$(call BuildFirmware/Default8M/$(1),$(1),mt7620a_v22sg,MT7620a_V22SG)
+-br100_mtd_size=8126464
+-Image/Build/Profile/AIBR100=$(call BuildFirmware/CustomFlash/$(1),$(1),ai-br100,AIBR100,$(br100_mtd_size),Ai-BR)
+-Image/Build/Profile/RP-N53=$(call BuildFirmware/Default8M/$(1),$(1),rp_n53,RP-N53)
+-whr_300hp2_mtd_size=7012352
+-Image/Build/Profile/WHR300HP2=$(call BuildFirmware/CustomFlash/$(1),$(1),whr-300hp2,WHR-300HP2,$(whr_300hp2_mtd_size))
+-Image/Build/Profile/WHR600D=$(call BuildFirmware/CustomFlash/$(1),$(1),whr-600d,WHR-600D,$(whr_300hp2_mtd_size))
+-whr_1166d_mtd_size=15400960
+-Image/Build/Profile/WHR1166D=$(call BuildFirmware/CustomFlash/$(1),$(1),whr-1166d,WHR-1166D,$(whr_1166hd_mtd_size))
+-dlink810l_mtd_size=6881280
+-Image/Build/Profile/DIR-810L=$(call BuildFirmware/CustomFlash/$(1),$(1),dir-810l,DIR-810L,$(dlink810l_mtd_size))
+-na930_mtd_size=20971520
+-Image/Build/Profile/NA930=$(call BuildFirmware/CustomFlash/$(1),$(1),na930,NA930,$(na930_mtd_size))
+-Image/Build/Profile/MZK-750DHP=$(call BuildFirmware/Default8M/$(1),$(1),mzk-750dhp,MZK-750DHP)
+-Image/Build/Profile/Y1=$(call BuildFirmware/Default16M/$(1),$(1),Lenovo-y1,Y1)
+-Image/Build/Profile/Y1S=$(call BuildFirmware/Default16M/$(1),$(1),Lenovo-y1s,Y1S)
+-Image/Build/Profile/MLW221=$(call BuildFirmware/Default16M/$(1),$(1),mlw221,MLW221)
+-Image/Build/Profile/MLWG2=$(call BuildFirmware/Default16M/$(1),$(1),mlwg2,MLWG2)
+-Image/Build/Profile/WMR300=$(call BuildFirmware/Default8M/$(1),$(1),wmr-300,WMR300)
+-Image/Build/Profile/RT-N14U=$(call BuildFirmware/Default8M/$(1),$(1),rt-n14u,RT-N14U)
+-Image/Build/Profile/WR8305RT=$(call BuildFirmware/Default8M/$(1),$(1),wr8305rt,WR8305RT)
+-Image/Build/Profile/WRTNODE=$(call BuildFirmware/Default16M/$(1),$(1),wrtnode,WRTNODE)
+-Image/Build/Profile/WT3020=$(call BuildFirmware/PorayDualSize/$(1),$(1),wt3020,WT3020)
+-Image/Build/Profile/XIAOMI-MIWIFI-MINI=$(call BuildFirmware/Default16M/$(1),$(1),xiaomi-miwifi-mini,XIAOMI-MIWIFI-MINI)
+-Image/Build/Profile/ZTE-Q7=$(call BuildFirmware/Default8M/$(1),$(1),zte-q7,ZTE-Q7)
+-Image/Build/Profile/ZBT-WA05=$(call BuildFirmware/Default8M/$(1),$(1),zbt-wa05,ZBT-WA05)
+-Image/Build/Profile/ArcherC20i=$(call BuildFirmware/Tplink/$(1),$(1),ArcherC20i,ArcherC20i)
+-microwrt_mtd_size=16515072
+-Image/Build/Profile/MicroWRT=$(call BuildFirmware/CustomFlash/$(1),$(1),microwrt,MicroWRT,$(microwrt_mtd_size))
+-
++Image/Build/Profile/HC5661=$(call BuildFirmware/Default16M/$(1),$(1),HC5661,HC5661)
+ 
+ ifeq ($(SUBTARGET),mt7620)
+ define Image/Build/Profile/Default
+-	$(call Image/Build/Profile/E1700,$(1))
+-	$(call Image/Build/Profile/MT7620a,$(1))
+-	$(call Image/Build/Profile/MT7620a_MT7610e,$(1))
+-	$(call Image/Build/Profile/MT7620a_MT7530,$(1))
+-	$(call Image/Build/Profile/MT7620a_V22SG,$(1))
+-	$(call Image/Build/Profile/AIBR100,$(1))
+-	$(call Image/Build/Profile/RP-N53,$(1))
+-	$(call Image/Build/Profile/DIR-810L,$(1))
+-	$(call Image/Build/Profile/WHR300HP2,$(1))
+-	$(call Image/Build/Profile/WHR600D,$(1))
+-	$(call Image/Build/Profile/WHR1166D,$(1))
+-	$(call Image/Build/Profile/MZK-750DHP,$(1))
+-	$(call Image/Build/Profile/NA930,$(1))
+-	$(call Image/Build/Profile/Y1,$(1))
+-	$(call Image/Build/Profile/Y1S,$(1))
+-	$(call Image/Build/Profile/MLW221,$(1))
+-	$(call Image/Build/Profile/MLWG2,$(1))
+-	$(call Image/Build/Profile/WMR300,$(1))
+-	$(call Image/Build/Profile/RT-N14U,$(1))
+-	$(call Image/Build/Profile/WR8305RT,$(1))
+-	$(call Image/Build/Profile/WRTNODE,$(1))
+-	$(call Image/Build/Profile/WT3020,$(1))
+-	$(call Image/Build/Profile/XIAOMI-MIWIFI-MINI,$(1))
+-	$(call Image/Build/Profile/ZTE-Q7,$(1))
+-	$(call Image/Build/Profile/ZBT-WA05,$(1))
+-	$(call Image/Build/Profile/ArcherC20i,$(1))
+-	$(call Image/Build/Profile/MicroWRT,$(1))
++	$(call Image/Build/Profile/HC5661,$(1))
+ endef
+ endif
+ 
