@@ -1,7 +1,7 @@
-diff -Nur trunk_bak/feeds/luci/modules/luci-base/po/zh-cn/base.po trunk_init/feeds/luci/modules/luci-base/po/zh-cn/base.po
---- trunk_bak/feeds/luci/modules/luci-base/po/zh-cn/base.po	2015-05-08 11:46:05.002064002 +0800
-+++ trunk_init/feeds/luci/modules/luci-base/po/zh-cn/base.po	2015-05-08 13:52:10.422243855 +0800
-@@ -1437,6 +1437,9 @@
+diff -Nur a/feeds/luci/modules/luci-base/po/zh-cn/base.po b/feeds/luci/modules/luci-base/po/zh-cn/base.po
+--- a/feeds/luci/modules/luci-base/po/zh-cn/base.po	2015-05-09 21:28:11.180123281 +0800
++++ b/feeds/luci/modules/luci-base/po/zh-cn/base.po	2015-05-09 22:17:57.796214853 +0800
+@@ -1436,6 +1436,9 @@
  msgid "Logout"
  msgstr "退出"
  
@@ -11,9 +11,9 @@ diff -Nur trunk_bak/feeds/luci/modules/luci-base/po/zh-cn/base.po trunk_init/fee
  msgid "Lowest leased address as offset from the network address."
  msgstr "网络地址的起始分配基址。"
  
-diff -Nur trunk_bak/feeds/luci/modules/luci-base/root/etc/config/luci trunk_init/feeds/luci/modules/luci-base/root/etc/config/luci
---- trunk_bak/feeds/luci/modules/luci-base/root/etc/config/luci	2015-05-08 11:46:05.018064003 +0800
-+++ trunk_init/feeds/luci/modules/luci-base/root/etc/config/luci	2015-05-08 13:52:10.438243855 +0800
+diff -Nur a/feeds/luci/modules/luci-base/root/etc/config/luci b/feeds/luci/modules/luci-base/root/etc/config/luci
+--- a/feeds/luci/modules/luci-base/root/etc/config/luci	2015-05-09 21:28:11.180123281 +0800
++++ b/feeds/luci/modules/luci-base/root/etc/config/luci	2015-05-09 22:17:57.796214853 +0800
 @@ -1,6 +1,6 @@
  config core main
 -	option lang auto
@@ -37,14 +37,14 @@ diff -Nur trunk_bak/feeds/luci/modules/luci-base/root/etc/config/luci trunk_init
  		
  config internal themes
 +	option Bootstrap "/luci-static/bootstrap"
-diff -Nur trunk_bak/feeds/luci/modules/luci-mod-admin-full/luasrc/controller/admin/index.lua trunk_init/feeds/luci/modules/luci-mod-admin-full/luasrc/controller/admin/index.lua
---- trunk_bak/feeds/luci/modules/luci-mod-admin-full/luasrc/controller/admin/index.lua	2015-05-08 11:46:05.114064005 +0800
-+++ trunk_init/feeds/luci/modules/luci-mod-admin-full/luasrc/controller/admin/index.lua	2015-05-08 13:52:10.438243855 +0800
+diff -Nur a/feeds/luci/modules/luci-mod-admin-full/luasrc/controller/admin/index.lua b/feeds/luci/modules/luci-mod-admin-full/luasrc/controller/admin/index.lua
+--- a/feeds/luci/modules/luci-mod-admin-full/luasrc/controller/admin/index.lua	2015-05-09 21:28:11.180123281 +0800
++++ b/feeds/luci/modules/luci-mod-admin-full/luasrc/controller/admin/index.lua	2015-05-09 22:17:57.796214853 +0800
 @@ -22,6 +22,7 @@
  	-- Empty services menu to be populated by addons
  	entry({"admin", "services"}, firstchild(), _("Services"), 40).index = true
  
-+	entry({"admin", "Free_Memory"}, call("Free_Memory"), _("Free Memory"), 89)
++	entry({"admin", "free_memory"}, call("free_memory"), _("Free Memory"), 75)
  	entry({"admin", "logout"}, call("action_logout"), _("Logout"), 90)
  end
  
@@ -53,23 +53,48 @@ diff -Nur trunk_bak/feeds/luci/modules/luci-mod-admin-full/luasrc/controller/adm
  	luci.http.redirect(luci.dispatcher.build_url())
  end
 +
-+function Free_Memory()
++function free_memory()
 +	luci.util.exec("echo 3 > /proc/sys/vm/drop_caches")
 +	luci.http.redirect(luci.dispatcher.build_url("admin", "status", "overview"))
 +end
-diff -Nur trunk_bak/feeds.conf.default trunk_init/feeds.conf.default
---- trunk_bak/feeds.conf.default	2015-05-08 11:47:02.000000000 +0800
-+++ trunk_init/feeds.conf.default	2015-05-08 13:52:10.502243857 +0800
-@@ -1,5 +1,5 @@
+diff -Nur a/feeds/luci/modules/luci-mod-admin-full/luasrc/controller/admin/system.lua b/feeds/luci/modules/luci-mod-admin-full/luasrc/controller/admin/system.lua
+--- a/feeds/luci/modules/luci-mod-admin-full/luasrc/controller/admin/system.lua	2015-05-09 21:28:11.180123281 +0800
++++ b/feeds/luci/modules/luci-mod-admin-full/luasrc/controller/admin/system.lua	2015-05-09 22:19:31.000000000 +0800
+@@ -31,7 +31,7 @@
+ 		entry({"admin", "system", "leds"}, cbi("admin_system/leds"), _("<abbr title=\"Light Emitting Diode\">LED</abbr> Configuration"), 60)
+ 	end
+ 
+-	entry({"admin", "system", "flashops"}, call("action_flashops"), _("Backup / Flash Firmware"), 70)
++	entry({"admin", "flashops"}, call("action_flashops"), _("Backup / Flash Firmware"), 70)
+ 	entry({"admin", "system", "flashops", "backupfiles"}, form("admin_system/backupfiles"))
+ 
+ 	entry({"admin", "system", "reboot"}, call("action_reboot"), _("Reboot"), 90)
+diff -Nur a/feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_system/reboot.htm b/feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_system/reboot.htm
+--- a/feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_system/reboot.htm	2015-05-09 21:28:11.184123281 +0800
++++ b/feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_system/reboot.htm	2015-05-09 22:23:50.000000000 +0800
+@@ -5,8 +5,7 @@
+ -%>
+ 
+ <%+header%>
+-<h2><a id="content" name="content"><%:System%></a></h2>
+-<h3><%:Reboot%></h3>
++<h2><a id="content" name="content"><%:Reboot%></a></h2>
+ <p><%:Reboots the operating system of your device%></p>
+ <%-
+ local c = require("luci.model.uci").cursor():changes()
+diff -Nur a/feeds.conf.default b/feeds.conf.default
+--- a/feeds.conf.default	2015-05-09 21:18:58.212106326 +0800
++++ b/feeds.conf.default	2015-05-09 22:26:34.000000000 +0800
+@@ -1,5 +1,6 @@
  src-git packages https://github.com/openwrt/packages.git
--src-git luci https://github.com/openwrt/luci.git
-+src-git luci https://github.com/981213/luci-1.git
+ src-git luci https://github.com/openwrt/luci.git
++#src-git luci https://github.com/981213/luci-1.git
  src-git routing https://github.com/openwrt-routing/packages.git
  src-git telephony https://github.com/openwrt/telephony.git
  src-git management https://github.com/openwrt-management/packages.git
-diff -Nur trunk_bak/package/base-files/files/etc/config/samba trunk_init/package/base-files/files/etc/config/samba
---- trunk_bak/package/base-files/files/etc/config/samba	1970-01-01 08:00:00.000000000 +0800
-+++ trunk_init/package/base-files/files/etc/config/samba	2015-05-08 13:52:10.502243857 +0800
+diff -Nur a/files/etc/config/samba b/files/etc/config/samba
+--- a/files/etc/config/samba	1970-01-01 08:00:00.000000000 +0800
++++ b/files/etc/config/samba	2015-05-09 22:17:57.800214853 +0800
 @@ -0,0 +1,9 @@
 +config samba
 +	option charset 'gb2312'
@@ -80,56 +105,9 @@ diff -Nur trunk_bak/package/base-files/files/etc/config/samba trunk_init/package
 +	option create_mask '0777'
 +	option dir_mask '0777'
 +	option display charset
-diff -Nur trunk_bak/package/base-files/files/etc/config/system trunk_init/package/base-files/files/etc/config/system
---- trunk_bak/package/base-files/files/etc/config/system	2015-05-08 11:45:54.650063756 +0800
-+++ trunk_init/package/base-files/files/etc/config/system	2015-05-08 13:52:10.518243857 +0800
-@@ -1,11 +1,34 @@
- config system
--	option hostname	OpenWrt
--	option timezone	UTC
-+	option hostname 'HiWiFi'
-+	option timezone 'CST-8'
-+	option zonename 'Asia/Shanghai'
- 
--config timeserver ntp
--	list server	0.openwrt.pool.ntp.org
--	list server	1.openwrt.pool.ntp.org
--	list server	2.openwrt.pool.ntp.org
--	list server	3.openwrt.pool.ntp.org
--	option enabled 1
--	option enable_server 0
-+config timeserver 'ntp'
-+	list server '0.openwrt.pool.ntp.org'
-+	list server '1.openwrt.pool.ntp.org'
-+	list server '2.openwrt.pool.ntp.org'
-+	list server '3.openwrt.pool.ntp.org'
-+	option enabled '1'
-+	option enable_server '0'
-+
-+config led
-+	option name 'power'
-+	option sysfs 'HC5661:blue:power'
-+	option default '1'
-+	option trigger 'none'
-+
-+config led
-+	option default '0'
-+	option name 'internet'
-+	option sysfs 'HC5661:blue:internet'
-+	option trigger 'netdev'
-+	option dev 'eth0'
-+	option mode 'link tx rx'
-+
-+config led
-+	option default '0'
-+	option name 'wifi'
-+	option sysfs 'HC5661:blue:wifi'
-+	option trigger 'netdev'
-+	option dev 'wlan0'
-+	option mode 'link tx rx'
-diff -Nur trunk_bak/package/base-files/files/etc/config/uhttpd trunk_init/package/base-files/files/etc/config/uhttpd
---- trunk_bak/package/base-files/files/etc/config/uhttpd	1970-01-01 08:00:00.000000000 +0800
-+++ trunk_init/package/base-files/files/etc/config/uhttpd	2015-05-08 13:52:10.518243857 +0800
+diff -Nur a/files/etc/config/uhttpd b/files/etc/config/uhttpd
+--- a/files/etc/config/uhttpd	1970-01-01 08:00:00.000000000 +0800
++++ b/files/etc/config/uhttpd	2015-05-09 22:17:57.800214853 +0800
 @@ -0,0 +1,27 @@
 +
 +config uhttpd 'main'
@@ -156,11 +134,11 @@ diff -Nur trunk_bak/package/base-files/files/etc/config/uhttpd trunk_init/packag
 +	option country 'DE'
 +	option state 'Berlin'
 +	option location 'Berlin'
-+	option commonname 'OpenWrt'
++	option commonname 'HiWiFi'
 +
-diff -Nur trunk_bak/package/base-files/files/etc/hotplug.d/block/30-block_mount trunk_init/package/base-files/files/etc/hotplug.d/block/30-block_mount
---- trunk_bak/package/base-files/files/etc/hotplug.d/block/30-block_mount	1970-01-01 08:00:00.000000000 +0800
-+++ trunk_init/package/base-files/files/etc/hotplug.d/block/30-block_mount	2014-12-01 01:18:33.000000000 +0800
+diff -Nur a/files/etc/hotplug.d/block/30-block_mount b/files/etc/hotplug.d/block/30-block_mount
+--- a/files/etc/hotplug.d/block/30-block_mount	1970-01-01 08:00:00.000000000 +0800
++++ b/files/etc/hotplug.d/block/30-block_mount	2015-05-09 22:17:57.800214853 +0800
 @@ -0,0 +1,360 @@
 +#!/bin/sh
 +
@@ -522,10 +500,9 @@ diff -Nur trunk_bak/package/base-files/files/etc/hotplug.d/block/30-block_mount 
 +    fi
 +fi
 +# Script EOF
-+
-diff -Nur trunk_bak/package/base-files/files/etc/samba/smb.conf.template trunk_init/package/base-files/files/etc/samba/smb.conf.template
---- trunk_bak/package/base-files/files/etc/samba/smb.conf.template	1970-01-01 08:00:00.000000000 +0800
-+++ trunk_init/package/base-files/files/etc/samba/smb.conf.template	2015-05-08 13:52:10.522243857 +0800
+diff -Nur a/files/etc/samba/smb.conf.template b/files/etc/samba/smb.conf.template
+--- a/files/etc/samba/smb.conf.template	1970-01-01 08:00:00.000000000 +0800
++++ b/files/etc/samba/smb.conf.template	2015-05-09 22:17:57.800214853 +0800
 @@ -0,0 +1,34 @@
 +[global]
 +	netbios name = |NAME| 
@@ -561,18 +538,65 @@ diff -Nur trunk_bak/package/base-files/files/etc/samba/smb.conf.template trunk_i
 +	use sendfile = yes
 +	writeable = yes
 +	
-diff -Nur trunk_bak/package/base-files/files/etc/shadow trunk_init/package/base-files/files/etc/shadow
---- trunk_bak/package/base-files/files/etc/shadow	2015-05-08 11:45:54.626063756 +0800
-+++ trunk_init/package/base-files/files/etc/shadow	2015-05-08 13:52:10.542243858 +0800
+diff -Nur a/package/base-files/files/etc/config/system b/package/base-files/files/etc/config/system
+--- a/package/base-files/files/etc/config/system	2015-05-09 21:18:53.132106170 +0800
++++ b/package/base-files/files/etc/config/system	2015-05-09 22:17:57.816214854 +0800
+@@ -1,11 +1,34 @@
+ config system
+-	option hostname	OpenWrt
+-	option timezone	UTC
++	option hostname 'HiWiFi'
++	option timezone 'CST-8'
++	option zonename 'Asia/Shanghai'
+ 
+-config timeserver ntp
+-	list server	0.openwrt.pool.ntp.org
+-	list server	1.openwrt.pool.ntp.org
+-	list server	2.openwrt.pool.ntp.org
+-	list server	3.openwrt.pool.ntp.org
+-	option enabled 1
+-	option enable_server 0
++config timeserver 'ntp'
++	list server '0.openwrt.pool.ntp.org'
++	list server '1.openwrt.pool.ntp.org'
++	list server '2.openwrt.pool.ntp.org'
++	list server '3.openwrt.pool.ntp.org'
++	option enabled '1'
++	option enable_server '0'
++
++config led
++	option name 'power'
++	option sysfs 'HC5661:blue:power'
++	option default '1'
++	option trigger 'none'
++
++config led
++	option default '0'
++	option name 'internet'
++	option sysfs 'HC5661:blue:internet'
++	option trigger 'netdev'
++	option dev 'eth0'
++	option mode 'link tx rx'
++
++config led
++	option default '0'
++	option name 'wifi'
++	option sysfs 'HC5661:blue:wifi'
++	option trigger 'netdev'
++	option dev 'wlan0'
++	option mode 'link tx rx'
+diff -Nur a/package/base-files/files/etc/shadow b/package/base-files/files/etc/shadow
+--- a/package/base-files/files/etc/shadow	2015-05-09 21:18:52.308106145 +0800
++++ b/package/base-files/files/etc/shadow	2015-05-09 22:17:57.836214855 +0800
 @@ -1,4 +1,4 @@
 -root::0:0:99999:7:::
 +root:$1$wEehtjxj$YBu4quNfVUjzfv8p/PBo5.:0:0:99999:7:::
  daemon:*:0:0:99999:7:::
  ftp:*:0:0:99999:7:::
  network:*:0:0:99999:7:::
-diff -Nur trunk_bak/package/base-files/files/etc/sysctl.conf trunk_init/package/base-files/files/etc/sysctl.conf
---- trunk_bak/package/base-files/files/etc/sysctl.conf	2015-05-08 11:45:54.622063756 +0800
-+++ trunk_init/package/base-files/files/etc/sysctl.conf	2015-05-08 13:52:10.550243858 +0800
+diff -Nur a/package/base-files/files/etc/sysctl.conf b/package/base-files/files/etc/sysctl.conf
+--- a/package/base-files/files/etc/sysctl.conf	2015-05-09 21:18:53.408106179 +0800
++++ b/package/base-files/files/etc/sysctl.conf	2015-05-09 22:17:57.836214855 +0800
 @@ -18,7 +18,7 @@
  
  net.netfilter.nf_conntrack_acct=1
@@ -582,9 +606,9 @@ diff -Nur trunk_bak/package/base-files/files/etc/sysctl.conf trunk_init/package/
  net.netfilter.nf_conntrack_tcp_timeout_established=7440
  net.netfilter.nf_conntrack_udp_timeout=60
  net.netfilter.nf_conntrack_udp_timeout_stream=180
-diff -Nur trunk_bak/package/kernel/mac80211/files/lib/wifi/mac80211.sh trunk_init/package/kernel/mac80211/files/lib/wifi/mac80211.sh
---- trunk_bak/package/kernel/mac80211/files/lib/wifi/mac80211.sh	2015-05-08 11:45:51.074063671 +0800
-+++ trunk_init/package/kernel/mac80211/files/lib/wifi/mac80211.sh	2015-05-08 13:54:44.890247527 +0800
+diff -Nur a/package/kernel/mac80211/files/lib/wifi/mac80211.sh b/package/kernel/mac80211/files/lib/wifi/mac80211.sh
+--- a/package/kernel/mac80211/files/lib/wifi/mac80211.sh	2015-05-09 21:12:19.416094098 +0800
++++ b/package/kernel/mac80211/files/lib/wifi/mac80211.sh	2015-05-09 22:17:57.852214855 +0800
 @@ -115,13 +115,12 @@
  $dev_id
  $ht_capab
@@ -600,9 +624,9 @@ diff -Nur trunk_bak/package/kernel/mac80211/files/lib/wifi/mac80211.sh trunk_ini
  	option encryption none
  
  EOF
-diff -Nur trunk_bak/target/linux/ramips/base-files/etc/board.d/01_leds trunk_init/target/linux/ramips/base-files/etc/board.d/01_leds
---- trunk_bak/target/linux/ramips/base-files/etc/board.d/01_leds	2015-05-08 11:45:48.366063607 +0800
-+++ trunk_init/target/linux/ramips/base-files/etc/board.d/01_leds	2015-05-08 13:54:44.958247529 +0800
+diff -Nur a/target/linux/ramips/base-files/etc/board.d/01_leds b/target/linux/ramips/base-files/etc/board.d/01_leds
+--- a/target/linux/ramips/base-files/etc/board.d/01_leds	2015-05-09 20:57:16.916066427 +0800
++++ b/target/linux/ramips/base-files/etc/board.d/01_leds	2015-05-09 22:17:57.868214856 +0800
 @@ -231,6 +231,11 @@
  	xiaomi-miwifi-mini)
  		ucidef_set_led_default "power" "power" "xiaomi:red:status" "1"
@@ -615,9 +639,9 @@ diff -Nur trunk_bak/target/linux/ramips/base-files/etc/board.d/01_leds trunk_ini
  	y1 |\
  	y1s)
  		ucidef_set_led_default "power" "power" "lenovo:blue:power" "1"
-diff -Nur trunk_bak/target/linux/ramips/base-files/etc/board.d/02_network trunk_init/target/linux/ramips/base-files/etc/board.d/02_network
---- trunk_bak/target/linux/ramips/base-files/etc/board.d/02_network	2015-05-08 11:45:48.366063607 +0800
-+++ trunk_init/target/linux/ramips/base-files/etc/board.d/02_network	2015-05-08 13:54:44.958247529 +0800
+diff -Nur a/target/linux/ramips/base-files/etc/board.d/02_network b/target/linux/ramips/base-files/etc/board.d/02_network
+--- a/target/linux/ramips/base-files/etc/board.d/02_network	2015-05-09 20:57:16.916066427 +0800
++++ b/target/linux/ramips/base-files/etc/board.d/02_network	2015-05-09 22:17:57.872214856 +0800
 @@ -223,6 +223,7 @@
  		ucidef_add_switch_vlan "switch0" "2" "4 6t"
  		;;
@@ -634,9 +658,9 @@ diff -Nur trunk_bak/target/linux/ramips/base-files/etc/board.d/02_network trunk_
  	y1 |\
  	y1s)
  		lan_mac=$(cat /sys/class/net/eth0/address)
-diff -Nur trunk_bak/target/linux/ramips/base-files/etc/diag.sh trunk_init/target/linux/ramips/base-files/etc/diag.sh
---- trunk_bak/target/linux/ramips/base-files/etc/diag.sh	2015-05-08 11:45:48.362063607 +0800
-+++ trunk_init/target/linux/ramips/base-files/etc/diag.sh	2015-05-08 13:54:44.962247529 +0800
+diff -Nur a/target/linux/ramips/base-files/etc/diag.sh b/target/linux/ramips/base-files/etc/diag.sh
+--- a/target/linux/ramips/base-files/etc/diag.sh	2015-05-09 20:57:13.116066310 +0800
++++ b/target/linux/ramips/base-files/etc/diag.sh	2015-05-09 22:17:57.872214856 +0800
 @@ -220,6 +220,9 @@
  	na930)
  		status_led="na930:blue:power"
@@ -647,9 +671,9 @@ diff -Nur trunk_bak/target/linux/ramips/base-files/etc/diag.sh trunk_init/target
  	y1 | \
  	y1s)
  		status_led="lenovo:blue:power"
-diff -Nur trunk_bak/target/linux/ramips/base-files/lib/ramips.sh trunk_init/target/linux/ramips/base-files/lib/ramips.sh
---- trunk_bak/target/linux/ramips/base-files/lib/ramips.sh	2015-05-08 11:45:48.354063606 +0800
-+++ trunk_init/target/linux/ramips/base-files/lib/ramips.sh	2015-05-08 13:54:44.962247529 +0800
+diff -Nur a/target/linux/ramips/base-files/lib/ramips.sh b/target/linux/ramips/base-files/lib/ramips.sh
+--- a/target/linux/ramips/base-files/lib/ramips.sh	2015-05-09 20:57:12.272066284 +0800
++++ b/target/linux/ramips/base-files/lib/ramips.sh	2015-05-09 22:17:57.872214856 +0800
 @@ -385,6 +385,9 @@
  	*"ZTE Q7")
  		name="zte-q7"
@@ -660,9 +684,9 @@ diff -Nur trunk_bak/target/linux/ramips/base-files/lib/ramips.sh trunk_init/targ
  	*"Lenovo Y1")
  		name="y1"
  		;;
-diff -Nur trunk_bak/target/linux/ramips/base-files/lib/upgrade/platform.sh trunk_init/target/linux/ramips/base-files/lib/upgrade/platform.sh
---- trunk_bak/target/linux/ramips/base-files/lib/upgrade/platform.sh	2015-05-08 11:45:48.362063607 +0800
-+++ trunk_init/target/linux/ramips/base-files/lib/upgrade/platform.sh	2015-05-08 13:54:44.962247529 +0800
+diff -Nur a/target/linux/ramips/base-files/lib/upgrade/platform.sh b/target/linux/ramips/base-files/lib/upgrade/platform.sh
+--- a/target/linux/ramips/base-files/lib/upgrade/platform.sh	2015-05-09 20:57:12.272066284 +0800
++++ b/target/linux/ramips/base-files/lib/upgrade/platform.sh	2015-05-09 22:17:57.876214856 +0800
 @@ -113,6 +113,7 @@
  	x5 |\
  	x8 |\
@@ -671,9 +695,9 @@ diff -Nur trunk_bak/target/linux/ramips/base-files/lib/upgrade/platform.sh trunk
  	y1 |\
  	y1s |\
  	zte-q7 |\
-diff -Nur trunk_bak/target/linux/ramips/dts/HC5661.dts trunk_init/target/linux/ramips/dts/HC5661.dts
---- trunk_bak/target/linux/ramips/dts/HC5661.dts	1970-01-01 08:00:00.000000000 +0800
-+++ trunk_init/target/linux/ramips/dts/HC5661.dts	2015-05-08 13:54:44.966247529 +0800
+diff -Nur a/target/linux/ramips/dts/HC5661.dts b/target/linux/ramips/dts/HC5661.dts
+--- a/target/linux/ramips/dts/HC5661.dts	1970-01-01 08:00:00.000000000 +0800
++++ b/target/linux/ramips/dts/HC5661.dts	2015-05-09 22:17:57.876214856 +0800
 @@ -0,0 +1,146 @@
 +/dts-v1/;
 +
@@ -821,9 +845,9 @@ diff -Nur trunk_bak/target/linux/ramips/dts/HC5661.dts trunk_init/target/linux/r
 +		};
 +	};
 +};
-diff -Nur trunk_bak/target/linux/ramips/image/Makefile trunk_init/target/linux/ramips/image/Makefile
---- trunk_bak/target/linux/ramips/image/Makefile	2015-05-08 11:45:48.702063615 +0800
-+++ trunk_init/target/linux/ramips/image/Makefile	2015-05-08 13:54:44.974247529 +0800
+diff -Nur a/target/linux/ramips/image/Makefile b/target/linux/ramips/image/Makefile
+--- a/target/linux/ramips/image/Makefile	2015-05-09 20:57:09.012066184 +0800
++++ b/target/linux/ramips/image/Makefile	2015-05-09 22:17:57.900214857 +0800
 @@ -834,70 +834,11 @@
  # MT7620A Profiles
  #
