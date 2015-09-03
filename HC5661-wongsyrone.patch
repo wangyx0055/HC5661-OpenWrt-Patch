@@ -10,7 +10,7 @@ diff -Nur a/feeds/luci/modules/luci-base/root/etc/config/luci b/feeds/luci/modul
  	option resourcebase /luci-static/resources
  	
  config extern flash_keep
-@@ -22,3 +24,4 @@
+@@ -22,3 +22,4 @@
  	option enable 1
  		
  config internal themes
@@ -53,7 +53,7 @@ diff -Nur a/target/linux/ramips/base-files/etc/board.d/02_network b/target/linux
  	y1s)
  		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
  		ucidef_add_switch "switch0" "1" "1"
-@@ -267,6 +273,12 @@
+@@ -267,6 +267,12 @@
  		lan_mac=$(macaddr_setbit_la "$lan_mac")
  		wan_mac=$(macaddr_add "$lan_mac" 1)
  		;;
