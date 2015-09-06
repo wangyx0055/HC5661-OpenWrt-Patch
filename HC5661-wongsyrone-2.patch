@@ -1,6 +1,29 @@
+diff -Nur a/feeds/luci/applications/luci-app-p2pblock/root/etc/uci-defaults/luci-p2pblock b/feeds/luci/applications/luci-app-p2pblock/root/etc/uci-defaults/luci-p2pblock
+--- a/feeds/luci/applications/luci-app-p2pblock/root/etc/uci-defaults/luci-p2pblock	2015-09-06 20:15:10.963638010 +0800
++++ b/feeds/luci/applications/luci-app-p2pblock/root/etc/uci-defaults/luci-p2pblock	2015-09-05 06:49:10.000000000 +0800
+@@ -7,5 +7,7 @@
+ 	commit ucitrack
+ EOF
+ 
++/etc/init.d/freifunk-p2pblock disable
++
+ rm -f /tmp/luci-indexcache
+ exit 0
+diff -Nur a/feeds/luci/modules/luci-base/po/zh-cn/base.po b/feeds/luci/modules/luci-base/po/zh-cn/base.po
+--- a/feeds/luci/modules/luci-base/po/zh-cn/base.po	2015-09-06 20:15:11.112638010 +0800
++++ b/feeds/luci/modules/luci-base/po/zh-cn/base.po	2015-09-04 12:44:24.000000000 +0800
+@@ -2776,7 +2776,7 @@
+ msgstr "‰ΩøÁî®ÂπøÊí≠Ê†áÁ≠æ"
+ 
+ msgid "Use builtin IPv6-management"
+-msgstr ""
++msgstr "‰ΩøÁî®ÂÜÖÁΩÆIPv6ÁÆ°ÁêÜ"
+ 
+ msgid "Use custom DNS servers"
+ msgstr "‰ΩøÁî®Ëá™ÂÆö‰πâÁöÑDNSÊúçÂä°Âô®"
 diff -Nur a/feeds/luci/modules/luci-base/root/etc/config/luci b/feeds/luci/modules/luci-base/root/etc/config/luci
---- a/feeds/luci/modules/luci-base/root/etc/config/luci	2015-08-23 20:23:55.836659606 +0800
-+++ b/feeds/luci/modules/luci-base/root/etc/config/luci	2015-08-23 20:34:19.732671574 +0800
+--- a/feeds/luci/modules/luci-base/root/etc/config/luci	2015-09-06 20:15:11.112638010 +0800
++++ b/feeds/luci/modules/luci-base/root/etc/config/luci	2015-09-06 20:17:10.093637876 +0800
 @@ -1,6 +1,6 @@
  config core main
 -	option lang auto
@@ -15,9 +38,174 @@ diff -Nur a/feeds/luci/modules/luci-base/root/etc/config/luci b/feeds/luci/modul
  		
  config internal themes
 +	option Bootstrap "/luci-static/bootstrap"
+diff -Nur a/feeds/packages/net/sqm-scripts/files/usr/lib/lua/luci/i18n/sqm.zh-cn.po b/feeds/packages/net/sqm-scripts/files/usr/lib/lua/luci/i18n/sqm.zh-cn.po
+--- a/feeds/packages/net/sqm-scripts/files/usr/lib/lua/luci/i18n/sqm.zh-cn.po	1970-01-01 08:00:00.000000000 +0800
++++ b/feeds/packages/net/sqm-scripts/files/usr/lib/lua/luci/i18n/sqm.zh-cn.po	2015-09-05 12:13:12.000000000 +0800
+@@ -0,0 +1,139 @@
++msgid ""
++msgstr ""
++"Project-Id-Version: \n"
++"Report-Msgid-Bugs-To: \n"
++"POT-Creation-Date: 2015-09-04\n"
++"PO-Revision-Date: 2015-09-05 12:13+0800\n"
++"Last-Translator: kuoruan <kuoruan@qq.com>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=UTF-8\n"
++"Content-Transfer-Encoding: 8bit\n"
++"Plural-Forms: nplurals=1; plural=0;\n"
++"X-Generator: Poedit 1.8.4\n"
++"Language: zh_CN\n"
++"Language-Team: \n"
++
++msgid "Smart Queue Management"
++msgstr "Êô∫ËÉΩÈòüÂàóÁÆ°ÁêÜ"
++
++msgid ""
++"With <abbr title=\"Smart Queue Management\">SQM</abbr> you can enable traffic shaping, better "
++"mixing (Fair Queueing), active queue length management (AQM) and prioritisation on one network "
++"interface."
++msgstr ""
++"‰ΩøÁî® <abbr title=\"Êô∫ËÉΩÈòüÂàóÁÆ°ÁêÜ\">SQM</abbr>Ôºå‰Ω†ÂèØ‰ª•ÂêØÁî®ÊµÅÈáèÊéßÂà∂„ÄÅ Êõ¥Â•ΩÂú∞Ê∑∑Âêà (ÈòüÂàó)„ÄÅ ‰∏ªÂä®ÁÆ°ÁêÜÈòüÂàó"
++"ÈïøÂ∫¶(AQM) Âíå‰∏Ä‰∏™ÁΩëÁªúÊé•Âè£ÁöÑ‰ºòÂÖàÁ∫ß„ÄÇ"
++
++msgid "Queues"
++msgstr "ÈòüÂàó"
++
++msgid "Basic Settings"
++msgstr "Âü∫Êú¨ËÆæÁΩÆ"
++
++msgid "Queue Discipline"
++msgstr "ÈòüÂàóËßÑÂàô"
++
++msgid "Link Layer Adaptation"
++msgstr "ÈìæË∑ØÂ±ÇÈÄÇÈÖç"
++
++msgid "Enable this SQM instance."
++msgstr "ÂêØÁî® SQM"
++
++msgid ""
++"The SQM GUI has just enabled the sqm initscript on your behalf. Remember to disable the sqm "
++"initscript manually under System Startup menu in case this change was not wished for."
++msgstr ""
++"SQM GUI ÂàöÂàöÂú®‰Ω†ÁöÑÊìç‰Ωú‰∏ãÂêØÁî®‰∫Ü SQM ÂàùÂßãÂåñËÑöÊú¨ÔºåÂ¶ÇÊûú‰∏çÂ∏åÊúõÂ∫îÁî®Ê≠§Êõ¥ÊîπÔºåËØ∑Âú®Á≥ªÁªüÂêØÂä®ËèúÂçï‰∏≠ÊâãÂä®Á¶ÅÁî®Ê≠§ "
++"SQM ÂàùÂßãÂåñËÑöÊú¨„ÄÇ"
++
++msgid "Interface name"
++msgstr "Êé•Âè£ÂêçÁß∞"
++
++msgid "Download speed (kbit/s) (ingress) set to 0 to selectively disable ingress shaping:"
++msgstr "‰∏ãËΩΩÈÄüÂ∫¶(kbit/s), 0 ‰∏çÈôêÂà∂"
++
++msgid "Upload speed (kbit/s) (egress) set to 0 to selectively disable egress shaping:"
++msgstr "‰∏ä‰º†ÈÄüÂ∫¶(kbit/s), 0 ‰∏çÈôêÂà∂"
++
++msgid ""
++"Queuing disciplines useable on this system; instantiated only after first successful start of SQM. "
++"You need to start a new GUI session to see updates!"
++msgstr "‰ΩøÁî®ÈòüÂàóËßÑÂàô"
++
++msgid "default"
++msgstr "ÈªòËÆ§"
++
++msgid "Queue setup script"
++msgstr "ËÆæÁΩÆÈòüÂàóËÑöÊú¨"
++
++msgid ""
++"Show and Use Advanced Configuration. Advanced options will only be used as long as this box is "
++"checked."
++msgstr "ÊòæÁ§∫Âíå‰ΩøÁî®È´òÁ∫ßÈÖçÁΩÆÈ°π„ÄÇÈÄâ‰∏≠ËØ•Â§çÈÄâÊ°ÜÔºåÂ∞ÜÂè™‰ºö‰ΩøÁî®È´òÁ∫ßÈÄâÈ°π"
++
++msgid "Squash DSCP on inbound packets (ingress):"
++msgstr "ÂÖ•Á´ôÊï∞ÊçÆÂåÖ DSCP ‰ºòÂÖàÁ∫ß"
++
++msgid "Ignore DSCP on ingress:"
++msgstr "ÂøΩÁï•ÁöÑ DSCP ÂÖ•Á´ôÊï∞ÊçÆÂåÖ"
++
++msgid "Explicit congestion notification (ECN) status on inbound packets (ingress):"
++msgstr "Âú®ÂÖ•Á´ôÊï∞ÊçÆÂåÖ‰∏äÊòæÁ§∫Êã•Â°ûÈÄöÁü• (ECN) Áä∂ÊÄÅ"
++
++msgid "Explicit congestion notification (ECN) status on outbound packets (egress)."
++msgstr "Âú®Âá∫Á´ôÊï∞ÊçÆÂåÖ‰∏äÊòæÁ§∫Êã•Â°ûÈÄöÁü• (ECN) Áä∂ÊÄÅ"
++
++msgid ""
++"Show and Use Dangerous Configuration. Dangerous options will only be used as long as this box is "
++"checked."
++msgstr "ÊòæÁ§∫Âíå‰ΩøÁî®Âç±Èô©ÈÖçÁΩÆÈ°π„ÄÇÈÄâ‰∏≠ËØ•Â§çÈÄâÊ°ÜÔºåÂ∞ÜÂè™‰ºö‰ΩøÁî®Âç±Èô©ÈÄâÈ°π"
++
++msgid "Hard limit on ingress queues; leave empty for default."
++msgstr "Âº∫Âà∂ËøõÂÖ•ÂÖ•Á´ôÈòüÂàóÔºåÁïôÁ©∫‰ª•‰ΩøÁî®ÈªòËÆ§"
++
++msgid "Hard limit on egress queues; leave empty for default."
++msgstr "Âº∫Âà∂ËøõÂÖ•Âá∫Á´ôÈòüÂàóÔºåÁïôÁ©∫‰ª•‰ΩøÁî®ÈªòËÆ§"
++
++msgid ""
++"Latency target for ingress, e.g 5ms [units: s, ms, or us]; leave empty for automatic selection, "
++"put in the word default for the qdisc's default."
++msgstr "ÂÖ•Á´ôÁõÆÊ†áÂª∂ËøüÔºå‰æãÂ¶Ç5ms[Âçï‰ΩçÔºös,ms,us]ÔºåÁïôÁ©∫‰ª•Ëá™Âä®ÈÄâÊã©"
++
++msgid ""
++"Latency target for egress, e.g. 5ms [units: s, ms, or us]; leave empty for automatic selection, "
++"put in the word default for the qdisc's default."
++msgstr "Âá∫Á´ôÁõÆÊ†áÂª∂ËøüÔºå‰æãÂ¶Ç5ms[Âçï‰ΩçÔºös,ms,us]ÔºåÁïôÁ©∫‰ª•Ëá™Âä®ÈÄâÊã©"
++
++msgid ""
++"Advanced option string to pass to the ingress queueing disciplines; no error checking, use very "
++"carefully."
++msgstr "Â∞ÜÈ´òÁ∫ßÈÄâÈ°πÂ≠óÁ¨¶‰∏≤‰º†ÈÄíÂà∞ÂÖ•Á´ôÈòüÂàóËßÑÂàôÔºåÊó†ÈîôËØØÊ£ÄÊü•ÔºåË∞®ÊÖé‰ΩøÁî®"
++
++msgid ""
++"Advanced option string to pass to the egress queueing disciplines; no error checking, use very "
++"carefully."
++msgstr "Â∞ÜÈ´òÁ∫ßÈÄâÈ°πÂ≠óÁ¨¶‰∏≤‰º†ÈÄíÂà∞Âá∫Á´ôÈòüÂàóËßÑÂàôÔºåÊó†ÈîôËØØÊ£ÄÊü•ÔºåË∞®ÊÖé‰ΩøÁî®"
++
++msgid "Which link layer to account for:"
++msgstr "ÈìæË∑ØÂ±ÇÈÄÇÈÖç"
++
++msgid "Per Packet Overhead (byte):"
++msgstr "ÊØèÊï∞ÊçÆÂåÖÂºÄÈîÄ (byte)"
++
++msgid ""
++"Show Advanced Linklayer Options, (only needed if MTU > 1500). Advanced options will only be used "
++"as long as this box is checked."
++msgstr "ÊòæÁ§∫È´òÁ∫ßÈìæË∑ØÂ±ÇÈÄâÈ°πÔºå(Âè™Âú® MTU > 1500 Êó∂ÈúÄË¶Å)„ÄÇÂΩìËøô‰∏™ÈÄâÈ°πË¢´ÈÄâ‰∏≠ÔºåÂ∞ÜÂè™‰ΩøÁî®È´òÁ∫ßÈÄâÈ°π"
++
++msgid ""
++"Maximal Size for size and rate calculations, tcMTU (byte); needs to be >= interface MTU + overhead:"
++msgstr "‰ΩøÁî®ÊúÄÂ§ßÁöÑÂ§ßÂ∞èÂíåÈÄüÂ∫¶ËÆ°ÁÆó tcMTU (byte)ÔºõÈúÄË¶Å >= Êé•Âè£ÁöÑ MTU + ÂºÄÈîÄ"
++
++msgid "Number of entries in size/rate tables, TSIZE; for ATM choose TSIZE = (tcMTU + 1) / 16:"
++msgstr "Â§ßÂ∞è/Ë¥πÁéáË°®‰∏≠ÁöÑÊù°ÁõÆÊï∞ TSIZEÔºõÂØπ‰∫é ATM ÈÄâÊã© TSIZE = (tcMTU + 1) / 16"
++
++msgid "Minimal packet size, MPU (byte); needs to be > 0 for ethernet size tables:"
++msgstr "ÊúÄÂ∞èÁöÑÊï∞ÊçÆÂåÖÂ§ßÂ∞è MPU (byte)ÔºåÈúÄË¶Å‰ª•Â§™ÁΩëÂ∞∫ÂØ∏Ë°® > 0"
++
++msgid "Which linklayer adaptation mechanism to use; for testing only"
++msgstr "‰ΩøÁî®ÈìæË∑ØËá™ÈÄÇÂ∫îÊú∫Âà∂Ôºå‰ªÖÁî®‰∫éÊµãËØï"
+diff -Nur a/feeds/packages/net/sqm-scripts/Makefile b/feeds/packages/net/sqm-scripts/Makefile
+--- a/feeds/packages/net/sqm-scripts/Makefile	2015-09-06 20:14:23.539638064 +0800
++++ b/feeds/packages/net/sqm-scripts/Makefile	2015-09-04 20:52:06.000000000 +0800
+@@ -19,6 +19,8 @@
+ PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_RELEASE)
+ PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)-$(PKG_RELEASE)
+ 
++PO2LMO:=$(STAGING_DIR_HOST)/bin/po2lmo
++
+ include $(INCLUDE_DIR)/package.mk
+ 
+ define Package/sqm-scripts
+@@ -42,6 +44,9 @@
+ 
+ define Package/sqm-scripts/install
+ 	make -C $(PKG_BUILD_DIR) DESTDIR=$(1) PLATFORM=openwrt install
++	$(CP) ./files/* $(1)
++	${PO2LMO} $(1)/usr/lib/lua/luci/i18n/sqm.zh-cn.po $(1)/usr/lib/lua/luci/i18n/sqm.zh-cn.lmo
++	rm $(1)/usr/lib/lua/luci/i18n/sqm.zh-cn.po
+ endef
+ 
+ define Package/luci-app-sqm
 diff -Nur a/package/kernel/mac80211/files/lib/wifi/mac80211.sh b/package/kernel/mac80211/files/lib/wifi/mac80211.sh
---- a/package/kernel/mac80211/files/lib/wifi/mac80211.sh	2015-08-23 20:23:55.328659596 +0800
-+++ b/package/kernel/mac80211/files/lib/wifi/mac80211.sh	2015-08-23 20:38:27.452676326 +0800
+--- a/package/kernel/mac80211/files/lib/wifi/mac80211.sh	2015-09-06 18:50:12.780070565 +0800
++++ b/package/kernel/mac80211/files/lib/wifi/mac80211.sh	2015-09-06 20:17:10.093637876 +0800
 @@ -128,7 +128,7 @@
  	option device   radio$devidx
  	option network  lan
@@ -28,8 +216,8 @@ diff -Nur a/package/kernel/mac80211/files/lib/wifi/mac80211.sh b/package/kernel/
  
  EOF
 diff -Nur a/target/linux/ramips/base-files/etc/board.d/01_leds b/target/linux/ramips/base-files/etc/board.d/01_leds
---- a/target/linux/ramips/base-files/etc/board.d/01_leds	2015-08-23 20:23:55.600659601 +0800
-+++ b/target/linux/ramips/base-files/etc/board.d/01_leds	2015-08-23 20:48:31.356687910 +0800
+--- a/target/linux/ramips/base-files/etc/board.d/01_leds	2015-09-06 18:50:13.161070565 +0800
++++ b/target/linux/ramips/base-files/etc/board.d/01_leds	2015-09-06 20:17:10.100637873 +0800
 @@ -224,6 +224,11 @@
  wt3020)
  	ucidef_set_led_default "power" "power" "$board:blue:power" "0"
@@ -43,8 +231,8 @@ diff -Nur a/target/linux/ramips/base-files/etc/board.d/01_leds b/target/linux/ra
  y1s)
  	ucidef_set_led_default "power" "power" "$board:blue:power" "1"
 diff -Nur a/target/linux/ramips/base-files/etc/board.d/02_network b/target/linux/ramips/base-files/etc/board.d/02_network
---- a/target/linux/ramips/base-files/etc/board.d/02_network	2015-08-23 20:23:55.600659601 +0800
-+++ b/target/linux/ramips/base-files/etc/board.d/02_network	2015-08-23 20:53:19.632693440 +0800
+--- a/target/linux/ramips/base-files/etc/board.d/02_network	2015-09-06 18:50:13.161070565 +0800
++++ b/target/linux/ramips/base-files/etc/board.d/02_network	2015-09-06 20:17:10.100637873 +0800
 @@ -217,6 +217,7 @@
  		ucidef_add_switch_vlan "switch0" "1" "0 1 2 3 6t"
  		ucidef_add_switch_vlan "switch0" "2" "5 6t"
@@ -67,8 +255,8 @@ diff -Nur a/target/linux/ramips/base-files/etc/board.d/02_network b/target/linux
  	carambola|\
  	freestation5|\
 diff -Nur a/target/linux/ramips/base-files/etc/diag.sh b/target/linux/ramips/base-files/etc/diag.sh
---- a/target/linux/ramips/base-files/etc/diag.sh	2015-08-23 20:23:55.600659601 +0800
-+++ b/target/linux/ramips/base-files/etc/diag.sh	2015-08-23 20:40:23.312678548 +0800
+--- a/target/linux/ramips/base-files/etc/diag.sh	2015-09-06 18:50:13.161070565 +0800
++++ b/target/linux/ramips/base-files/etc/diag.sh	2015-09-06 20:17:10.101637875 +0800
 @@ -90,6 +90,9 @@
  	wl-330n3g|\
  	wli-tx4-ag300n|\
@@ -80,8 +268,8 @@ diff -Nur a/target/linux/ramips/base-files/etc/diag.sh b/target/linux/ramips/bas
  	y1s)
  		status_led="$board:blue:power"
 diff -Nur a/target/linux/ramips/base-files/lib/ramips.sh b/target/linux/ramips/base-files/lib/ramips.sh
---- a/target/linux/ramips/base-files/lib/ramips.sh	2015-08-23 20:23:55.600659601 +0800
-+++ b/target/linux/ramips/base-files/lib/ramips.sh	2015-08-23 20:55:30.040695941 +0800
+--- a/target/linux/ramips/base-files/lib/ramips.sh	2015-09-06 18:50:13.162070565 +0800
++++ b/target/linux/ramips/base-files/lib/ramips.sh	2015-09-06 20:17:10.101637875 +0800
 @@ -418,6 +418,9 @@
  	*"X8")
  		name="x8"
@@ -93,8 +281,8 @@ diff -Nur a/target/linux/ramips/base-files/lib/ramips.sh b/target/linux/ramips/b
  		name="y1"
  		;;
 diff -Nur a/target/linux/ramips/base-files/lib/upgrade/platform.sh b/target/linux/ramips/base-files/lib/upgrade/platform.sh
---- a/target/linux/ramips/base-files/lib/upgrade/platform.sh	2015-08-23 20:23:55.600659601 +0800
-+++ b/target/linux/ramips/base-files/lib/upgrade/platform.sh	2015-08-23 20:57:17.640698005 +0800
+--- a/target/linux/ramips/base-files/lib/upgrade/platform.sh	2015-09-06 18:50:13.162070565 +0800
++++ b/target/linux/ramips/base-files/lib/upgrade/platform.sh	2015-09-06 20:17:10.101637875 +0800
 @@ -123,6 +123,7 @@
  	wzr-agl300nh|\
  	x5|\
@@ -105,7 +293,7 @@ diff -Nur a/target/linux/ramips/base-files/lib/upgrade/platform.sh b/target/linu
  	zbt-wa05|\
 diff -Nur a/target/linux/ramips/dts/HC5661.dts b/target/linux/ramips/dts/HC5661.dts
 --- a/target/linux/ramips/dts/HC5661.dts	1970-01-01 08:00:00.000000000 +0800
-+++ b/target/linux/ramips/dts/HC5661.dts	2015-08-23 20:59:11.312700186 +0800
++++ b/target/linux/ramips/dts/HC5661.dts	2015-09-06 20:17:10.102637876 +0800
 @@ -0,0 +1,157 @@
 +/dts-v1/;
 +
@@ -265,8 +453,8 @@ diff -Nur a/target/linux/ramips/dts/HC5661.dts b/target/linux/ramips/dts/HC5661.
 +};
 +
 diff -Nur a/target/linux/ramips/image/Makefile b/target/linux/ramips/image/Makefile
---- a/target/linux/ramips/image/Makefile	2015-08-23 20:23:55.608659602 +0800
-+++ b/target/linux/ramips/image/Makefile	2015-08-23 21:04:08.628705889 +0800
+--- a/target/linux/ramips/image/Makefile	2015-09-06 18:50:13.171070565 +0800
++++ b/target/linux/ramips/image/Makefile	2015-09-06 20:17:10.102637876 +0800
 @@ -850,74 +850,11 @@
  # MT7620A Profiles
  #
@@ -346,7 +534,7 @@ diff -Nur a/target/linux/ramips/image/Makefile b/target/linux/ramips/image/Makef
  
 diff -Nur a/target/linux/ramips/mt7620/profiles/HiWiFi-HC5661.mk b/target/linux/ramips/mt7620/profiles/HiWiFi-HC5661.mk
 --- a/target/linux/ramips/mt7620/profiles/HiWiFi-HC5661.mk	1970-01-01 08:00:00.000000000 +0800
-+++ b/target/linux/ramips/mt7620/profiles/HiWiFi-HC5661.mk	2015-08-23 21:05:36.844707581 +0800
++++ b/target/linux/ramips/mt7620/profiles/HiWiFi-HC5661.mk	2015-09-06 20:17:10.102637876 +0800
 @@ -0,0 +1,21 @@
 +#
 +# Copyright (C) 2011 OpenWrt.org
@@ -369,168 +557,3 @@ diff -Nur a/target/linux/ramips/mt7620/profiles/HiWiFi-HC5661.mk b/target/linux/
 +endef
 +$(eval $(call Profile,HC5661))
 +
-diff -Nur a/feeds/packages/net/sqm-scripts/files/usr/lib/lua/luci/i18n/sqm.zh-cn.po b/feeds/packages/net/sqm-scripts/files/usr/lib/lua/luci/i18n/sqm.zh-cn.po
---- a/feeds/packages/net/sqm-scripts/files/usr/lib/lua/luci/i18n/sqm.zh-cn.po	1970-01-01 00:00:00.000000000 +0000
-+++ b/feeds/packages/net/sqm-scripts/files/usr/lib/lua/luci/i18n/sqm.zh-cn.po	2015-09-04 02:48:30.000000000 +0000
-@@ -0,0 +1,139 @@
-+msgid ""
-+msgstr ""
-+"Project-Id-Version: \n"
-+"Report-Msgid-Bugs-To: \n"
-+"POT-Creation-Date: 2014-06-28\n"
-+"PO-Revision-Date: 2015-09-04 10:48+0800\n"
-+"Last-Translator: kuoruan <kuoruan@qq.com>\n"
-+"MIME-Version: 1.0\n"
-+"Content-Type: text/plain; charset=UTF-8\n"
-+"Content-Transfer-Encoding: 8bit\n"
-+"Plural-Forms: nplurals=1; plural=0;\n"
-+"Language-Team: \n"
-+"X-Generator: Poedit 1.8.4\n"
-+"Language: zh_CN\n"
-+
-+msgid "Smart Queue Management"
-+msgstr "÷«ƒ‹∂”¡–π‹¿Ì"
-+
-+msgid ""
-+"With <abbr title=\"Smart Queue Management\">SQM</abbr> you can enable traffic shaping, better "
-+"mixing (Fair Queueing), active queue length management (AQM) and prioritisation on one network "
-+"interface."
-+msgstr ""
-+" π”√ <abbr title=\"÷«ƒ‹∂”¡–π‹¿Ì\">SQM</abbr>£¨ƒ„ø…“‘∆Ù”√¡˜¡øøÿ÷∆°¢ ∏¸∫√µÿªÏ∫œ (∂”¡–)°¢ ÷˜∂Øπ‹¿Ì∂”¡–"
-+"≥§∂»(AQM) ∫Õ“ª∏ˆÕ¯¬ÁΩ”ø⁄µƒ”≈œ»º∂°£"
-+
-+msgid "Queues"
-+msgstr "∂”¡–π‹¿Ì"
-+
-+msgid "Basic Settings"
-+msgstr "ª˘±æ…Ë÷√"
-+
-+msgid "Queue Discipline"
-+msgstr "∂”¡–πÊ‘Ú"
-+
-+msgid "Link Layer Adaptation"
-+msgstr "¡¥¬∑≤„  ≈‰"
-+
-+msgid "Enable this SQM instance."
-+msgstr "∆Ù”√ SQM"
-+
-+msgid ""
-+"The SQM GUI has just enabled the sqm initscript on your behalf. Remember to disable the sqm "
-+"initscript manually under System Startup menu in case this change was not wished for."
-+msgstr ""
-+"SQM GUI ∏’∏’‘⁄ƒ„µƒ≤Ÿ◊˜œ¬∆Ù”√¡À SQM ≥ı ºªØΩ≈±æ£¨»Áπ˚≤ªœ£Õ˚”¶”√¥À∏¸∏ƒ£¨«Î‘⁄œµÕ≥∆Ù∂Ø≤Àµ•÷– ÷∂ØΩ˚”√¥À "
-+"SQM ≥ı ºªØΩ≈±æ°£"
-+
-+msgid "Interface name"
-+msgstr "Ω”ø⁄√˚≥∆"
-+
-+msgid "Download speed (kbit/s) (ingress) set to 0 to selectively disable ingress shaping:"
-+msgstr "œ¬‘ÿÀŸ∂»(kbit/s), 0 ≤ªœﬁ÷∆"
-+
-+msgid "Upload speed (kbit/s) (egress) set to 0 to selectively disable egress shaping:"
-+msgstr "…œ¥´ÀŸ∂»(kbit/s)£¨0 ≤ªœﬁ÷∆"
-+
-+msgid ""
-+"Queuing disciplines useable on this system; instantiated only after first successful start of SQM. "
-+"You need to start a new GUI session to see updates!"
-+msgstr " π”√∂”¡–πÊ‘Ú£∫"
-+
-+msgid "default"
-+msgstr "ƒ¨»œ"
-+
-+msgid "Queue setup script"
-+msgstr "…Ë÷√∂”¡–Ω≈±æ"
-+
-+msgid ""
-+"Show and Use Advanced Configuration. Advanced options will only be used as long as this box is "
-+"checked."
-+msgstr "œ‘ æ∫Õ π”√∏ﬂº∂≈‰÷√œÓ"
-+
-+msgid "Squash DSCP on inbound packets (ingress):"
-+msgstr "»Î’æ ˝æ›∞¸ DSCP ”≈œ»º∂£∫"
-+
-+msgid "Ignore DSCP on ingress:"
-+msgstr "∫ˆ¬‘µƒ DSCP »Î’æ ˝æ›∞¸£∫"
-+
-+msgid "Explicit congestion notification (ECN) status on inbound packets (ingress):"
-+msgstr "‘⁄»Î’æ ˝æ›∞¸…œœ‘ æ”µ»˚Õ®÷™ (ECN) ◊¥Ã¨£∫"
-+
-+msgid "Explicit congestion notification (ECN) status on outbound packets (egress)."
-+msgstr "‘⁄≥ˆ’æ ˝æ›∞¸…œœ‘ æ”µ»˚Õ®÷™ (ECN) ◊¥Ã¨°£"
-+
-+msgid ""
-+"Show and Use Dangerous Configuration. Dangerous options will only be used as long as this box is "
-+"checked."
-+msgstr "œ‘ æ∫Õ π”√Œ£œ’≈‰÷√œÓ°£÷ª“™—°÷–∏√∏¥—°øÚ£¨Ω´÷ªª· π”√Œ£œ’—°œÓ°£"
-+
-+msgid "Hard limit on ingress queues; leave empty for default."
-+msgstr "«ø÷∆Ω¯»Î»Î’æ∂”¡–£¨¡Ùø’“‘ π”√ƒ¨»œ°£"
-+
-+msgid "Hard limit on egress queues; leave empty for default."
-+msgstr "«ø÷∆Ω¯»Î≥ˆ’æ∂”¡–£¨¡Ùø’“‘ π”√ƒ¨»œ°£"
-+
-+msgid ""
-+"Latency target for ingress, e.g 5ms [units: s, ms, or us]; leave empty for automatic selection, "
-+"put in the word default for the qdisc's default."
-+msgstr "»Î’æƒø±Í—”≥Ÿ£¨¿˝»Á5ms[µ•Œª£∫s,ms,us]£¨¡Ùø’“‘◊‘∂Ø—°‘Ò£¨ π”√ƒ¨»œ…Ë÷√¿¥øÏÀŸ»Î’æ°£"
-+
-+msgid ""
-+"Latency target for egress, e.g. 5ms [units: s, ms, or us]; leave empty for automatic selection, "
-+"put in the word default for the qdisc's default."
-+msgstr "≥ˆ’æƒø±Í—”≥Ÿ£¨¿˝»Á5ms[µ•Œª£∫s,ms,us]£¨¡Ùø’“‘◊‘∂Ø—°‘Ò£¨ π”√ƒ¨»œ…Ë÷√¿¥øÏÀŸ≥ˆ’æ°£"
-+
-+msgid ""
-+"Advanced option string to pass to the ingress queueing disciplines; no error checking, use very "
-+"carefully."
-+msgstr "Ω´∏ﬂº∂—°œÓ◊÷∑˚¥Æ¥´µ›µΩ»Î’æ∂”¡–πÊ‘Ú£ª√ª”–¥ÌŒÛºÏ≤È£¨ π”√ ±”¶∏√∑«≥£Ω˜…˜°£"
-+
-+msgid ""
-+"Advanced option string to pass to the egress queueing disciplines; no error checking, use very "
-+"carefully."
-+msgstr "Ω´∏ﬂº∂—°œÓ◊÷∑˚¥Æ¥´µ›µΩ≥ˆ’æ∂”¡–πÊ‘Ú£ª√ª”–¥ÌŒÛºÏ≤È£¨ π”√ ±”¶∏√∑«≥£Ω˜…˜°£"
-+
-+msgid "Which link layer to account for:"
-+msgstr "¡¥¬∑≤„  ≈‰£∫"
-+
-+msgid "Per Packet Overhead (byte):"
-+msgstr "√ø ˝æ›∞¸ø™œ˙ (byte)£∫"
-+
-+msgid ""
-+"Show Advanced Linklayer Options, (only needed if MTU > 1500). Advanced options will only be used "
-+"as long as this box is checked."
-+msgstr "œ‘ æ∏ﬂº∂¡¥¬∑≤„—°œÓ£¨(÷ª–Ë“™ MTU > 1500)°£µ±’‚∏ˆ—°œÓ±ª—°÷–£¨Ω´÷ª π”√∏ﬂº∂—°œÓ°£"
-+
-+msgid ""
-+"Maximal Size for size and rate calculations, tcMTU (byte); needs to be >= interface MTU + overhead:"
-+msgstr " π”√◊Ó¥Ûµƒ¥Û–°∫ÕÀŸ∂»º∆À„ tcMTU (byte)£ª–Ë“™ > = Ω”ø⁄MTU + ø™œ˙£∫"
-+
-+msgid "Number of entries in size/rate tables, TSIZE; for ATM choose TSIZE = (tcMTU + 1) / 16:"
-+msgstr "¥Û–°/∑—¬ ±Ì÷–µƒÃıƒø ˝ TSIZE£ª∂‘”⁄ ATM —°‘Ò TSIZE = (tcMTU + 1) / 16:"
-+
-+msgid "Minimal packet size, MPU (byte); needs to be > 0 for ethernet size tables:"
-+msgstr "◊Ó–°µƒ ˝æ›∞¸µƒ¥Û–° MPU (byte)£ª–Ë“™“‘Ã´Õ¯≥ﬂ¥Á±Ì > 0£∫"
-+
-+msgid "Which linklayer adaptation mechanism to use; for testing only"
-+msgstr " π”√¡¥¬∑◊‘  ”¶ª˙÷∆£ªΩˆ”√”⁄≤‚ ‘"
-diff -Nur a/feeds/packages/net/sqm-scripts/Makefile b/feeds/packages/net/sqm-scripts/Makefile
---- a/feeds/packages/net/sqm-scripts/Makefile	2015-09-04 11:24:46.125639860 +0000
-+++ b/feeds/packages/net/sqm-scripts/Makefile	2015-09-04 11:59:08.361716361 +0000
-@@ -19,6 +19,8 @@
- PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_RELEASE)
- PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)-$(PKG_RELEASE)
- 
-+PO2LMO:=$(STAGING_DIR_HOST)/bin/po2lmo
-+
- include $(INCLUDE_DIR)/package.mk
- 
- define Package/sqm-scripts
-@@ -42,6 +44,9 @@
- 
- define Package/sqm-scripts/install
- 	make -C $(PKG_BUILD_DIR) DESTDIR=$(1) PLATFORM=openwrt install
-+	$(CP) ./files/* $(1)
-+	${PO2LMO} $(1)/usr/lib/lua/luci/i18n/sqm.zh-cn.po $(1)/usr/lib/lua/luci/i18n/sqm.zh-cn.lmo
-+	rm $(1)/usr/lib/lua/luci/i18n/sqm.zh-cn.po
- endef
- 
- define Package/luci-app-sqm
